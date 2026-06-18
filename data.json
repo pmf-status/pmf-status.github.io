@@ -1,22 +1,54 @@
 {
-  "updatedAt": "2026-06-19T00:00:00.000Z",
+  "updatedAt": "2026-06-18T22:50:46.908Z",
   "grupa": "Geografija",
   "profil": "Geoprostorni analitičar",
   "ukupnoKandidata": 5,
-  "target": {
-    "ime": "Pavle",
-    "srednjeIme": "Predrag",
-    "prezime": "Palikuća",
-    "prosek": 4.1925,
-    "zavrseniDokumenti": true,
-    "status": "nepotvrđena",
-    "rang": 4
-  },
+  "target": null,
   "lista": [
-    { "ime": "Anja", "srednjeIme": "Ivana", "prezime": "Gajić", "prosek": 4.6025, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 1 },
-    { "ime": "Luka", "srednjeIme": "Suzana", "prezime": "Tomić", "prosek": 4.46, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 2 },
-    { "ime": "Stefan", "srednjeIme": "Milan", "prezime": "Dmitrović", "prosek": 4.2525, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 3 },
-    { "ime": "Pavle", "srednjeIme": "Predrag", "prezime": "Palikuća", "prosek": 4.1925, "zavrseniDokumenti": true, "status": "nepotvrđena", "rang": 4 },
-    { "ime": "Stevan", "srednjeIme": "Srđan", "prezime": "Sremčević", "prosek": 3.82, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 5 }
+    {
+      "ime": "Anja",
+      "srednjeIme": "Ivana",
+      "prezime": "Gajić",
+      "prosek": 4.6025,
+      "zavrseniDokumenti": false,
+      "status": "nepotvrđena",
+      "rang": 1
+    },
+    {
+      "ime": "Luka",
+      "srednjeIme": "Suzana",
+      "prezime": "Tomić",
+      "prosek": 4.46,
+      "zavrseniDokumenti": false,
+      "status": "nepotvrđena",
+      "rang": 2
+    },
+    {
+      "ime": "Stefan",
+      "srednjeIme": "Milan",
+      "prezime": "Dmitrović",
+      "prosek": 4.2525,
+      "zavrseniDokumenti": false,
+      "status": "nepotvrđena",
+      "rang": 3
+    },
+    {
+      "ime": "Pavle",
+      "srednjeIme": "Predrag",
+      "prezime": "Palikuća",
+      "prosek": 4.1925,
+      "zavrseniDokumenti": true,
+      "status": "nepotvrđena",
+      "rang": 4
+    },
+    {
+      "ime": "Stevan",
+      "srednjeIme": "Srđan",
+      "prezime": "Sremčević",
+      "prosek": 3.82,
+      "zavrseniDokumenti": false,
+      "status": "nepotvrđena",
+      "rang": 5
+    }
   ]
 }
