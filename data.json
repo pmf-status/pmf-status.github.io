@@ -1,9 +1,17 @@
 {
-  "updatedAt": "2026-06-18T22:50:46.908Z",
+  "updatedAt": "2026-06-18T22:53:20.721Z",
   "grupa": "Geografija",
   "profil": "Geoprostorni analitičar",
   "ukupnoKandidata": 5,
-  "target": null,
+  "target": {
+    "ime": "Pavle",
+    "srednjeIme": "Predrag",
+    "prezime": "Palikuća",
+    "prosek": 4.1925,
+    "zavrseniDokumenti": true,
+    "status": "nepotvrđena",
+    "rang": 4
+  },
   "lista": [
     {
       "ime": "Anja",
