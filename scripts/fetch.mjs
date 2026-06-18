@@ -9,8 +9,8 @@ const GRUPA_ID = 11; // Geografija
 const PROFIL_ID = 11; // Geoprostorni analitičar
 
 // Osoba čiju poziciju pratimo
-const TARGET_IME = "pavle";
-const TARGET_PREZIME = "palikuća";
+const TARGET_IME = "Pavle";
+const TARGET_PREZIME = "Palikuća";
 
 function normalize(str) {
   return (str || "")
