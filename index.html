@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pavle Palikuća — Rang lista, Geoprostorni analitičar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b2a23;
+    --parchment:#f3ead9;
+    --clay:#c1693c;
+    --teal:#5f8575;
+    --line: rgba(27,42,35,0.12);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--parchment);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+
+  /* topographic contour-line background, drawn once as SVG pattern */
+  .contours{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    opacity:0.16;
+    pointer-events:none;
+  }
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:720px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+
+  .eyebrow{
+    font-size:13px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+
+  h1{
+    font-family:'Source Serif 4', serif;
+    font-weight:700;
+    font-size:clamp(28px, 5vw, 40px);
+    line-height:1.15;
+    margin:0 0 6px;
+  }
+
+  .subtitle{
+    color:rgba(27,42,35,0.65);
+    font-size:15px;
+    margin-bottom:36px;
+  }
+
+  .card{
+    background:#fffaf0;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:36px;
+    text-align:center;
+    box-shadow:0 1px 2px rgba(27,42,35,0.04);
+  }
+
+  .rank-label{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--teal);
+    font-weight:600;
+    margin-bottom:12px;
+  }
+
+  .rank-number{
+    font-family:'Source Serif 4', serif;
+    font-weight:700;
+    font-size:clamp(64px, 18vw, 104px);
+    line-height:1;
+    color:var(--clay);
+  }
+
+  .rank-of{
+    font-size:18px;
+    color:rgba(27,42,35,0.6);
+    margin-top:4px;
+  }
+
+  .stats{
+    display:flex;
+    justify-content:center;
+    gap:36px;
+    margin-top:28px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+  }
+
+  .stat .num{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    font-size:24px;
+  }
+
+  .stat .lbl{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:rgba(27,42,35,0.55);
+    margin-top:2px;
+  }
+
+  .updated{
+    text-align:center;
+    font-size:13px;
+    color:rgba(27,42,35,0.5);
+    margin-top:18px;
+  }
+
+  details{
+    margin-top:40px;
+  }
+
+  summary{
+    cursor:pointer;
+    font-weight:600;
+    font-size:14px;
+    color:var(--teal);
+    list-style:none;
+  }
+  summary::-webkit-details-marker{ display:none; }
+  summary:before{
+    content:"→ ";
+  }
+  details[open] summary:before{
+    content:"↓ ";
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:16px;
+    font-size:14px;
+    background:#fffaf0;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+
+  th,td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+  }
+
+  th{
+    background:rgba(95,133,117,0.12);
+    font-weight:600;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+
+  tr.highlight td{
+    background:rgba(193,105,60,0.14);
+    font-weight:600;
+  }
+
+  .empty, .loading{
+    text-align:center;
+    color:rgba(27,42,35,0.6);
+    padding:40px 0;
+  }
+</style>
+</head>
+<body>
+
+<svg class="contours" viewBox="0 0 800 1200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#1b2a23" stroke-width="1.2">
+    <path d="M -50 100 C 150 60, 300 160, 500 90 S 800 140, 900 80" />
+    <path d="M -50 180 C 150 140, 300 240, 500 170 S 800 220, 900 160" />
+    <path d="M -50 260 C 150 220, 300 320, 500 250 S 800 300, 900 240" />
+    <path d="M -50 500 C 200 460, 350 560, 550 480 S 850 540, 900 470" />
+    <path d="M -50 570 C 200 530, 350 630, 550 550 S 850 610, 900 540" />
+    <path d="M -50 640 C 200 600, 350 700, 550 620 S 850 680, 900 610" />
+    <path d="M -50 900 C 180 850, 380 980, 560 900 S 820 950, 900 880" />
+    <path d="M -50 970 C 180 920, 380 1050, 560 970 S 820 1020, 900 950" />
+  </g>
+</svg>
+
+<div class="wrap">
+  <div class="eyebrow">ePMF · Prijemni ispit 2026</div>
+  <h1>Pavle Palikuća</h1>
+  <div class="subtitle">Geografija — Geoprostorni analitičar · rang po prosjeku 4 godine srednje škole</div>
+
+  <div id="content" class="card">
+    <div class="loading">Učitavanje podataka…</div>
+  </div>
+
+  <details id="listDetails">
+    <summary>Prikaži cijelu rang listu</summary>
+    <table id="rankTable">
+      <thead>
+        <tr><th>#</th><th>Ime i prezime</th><th>Prosjek</th></tr>
+      </thead>
+      <tbody id="rankBody"></tbody>
+    </table>
+  </details>
+</div>
+
+<script>
+  async function load() {
+    const content = document.getElementById('content');
+    try {
+      const res = await fetch('data.json?_=' + Date.now());
+      if (!res.ok) throw new Error('Ne mogu da učitam data.json');
+      const data = await res.json();
+
+      const t = data.target;
+      if (t) {
+        content.innerHTML = `
+          <div class="rank-label">Trenutna pozicija</div>
+          <div class="rank-number">#${t.rang}</div>
+          <div class="rank-of">od ${data.ukupnoKandidata} prijavljenih</div>
+          <div class="stats">
+            <div class="stat">
+              <div class="num">${t.prosek.toFixed(4)}</div>
+              <div class="lbl">Prosjek</div>
+            </div>
+          </div>
+        `;
+      } else {
+        content.innerHTML = `<div class="empty">Pavle Palikuća nije pronađen u trenutnim podacima.</div>`;
+      }
+
+      const updated = document.createElement('div');
+      updated.className = 'updated';
+      const dt = new Date(data.updatedAt);
+      updated.textContent = 'Ažurirano: ' + dt.toLocaleString('sr-RS');
+      content.after(updated);
+
+      const tbody = document.getElementById('rankBody');
+      tbody.innerHTML = data.lista.map(p => `
+        <tr class="${t && p.rang === t.rang ? 'highlight' : ''}">
+          <td>${p.rang}</td>
+          <td>${p.ime} ${p.prezime}</td>
+          <td>${p.prosek.toFixed(4)}</td>
+        </tr>
+      `).join('');
+
+    } catch (err) {
+      content.innerHTML = `<div class="empty">Greška pri učitavanju podataka: ${err.message}</div>`;
+    }
+  }
+
+  load();
+</script>
+
+</body>
+</html>
