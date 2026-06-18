@@ -20,8 +20,8 @@ function normalize(str) {
     .replace(/[\u0300-\u036f]/g, ""); // skida dijakritike (č, ć, š ...)
 }
 
-function prosek(p) {
-  return (p.uspeh1 + p.uspeh2 + p.uspeh3 + p.uspeh4) / 4;
+function ukupno(p) {
+  return p.uspeh1 + p.uspeh2 + p.uspeh3 + p.uspeh4;
 }
 
 async function main() {
@@ -77,26 +77,26 @@ async function main() {
     `Kandidata u grupi/profilu (${GRUPA_ID}/${PROFIL_ID}): ${filtered.length}`
   );
 
-  const withProsek = filtered.map((p) => ({
+  const withUkupno = filtered.map((p) => ({
     ime: p.ime,
     srednjeIme: p.srednjeIme,
     prezime: p.prezime,
-    prosek: Math.round(prosek(p) * 10000) / 10000,
+    ukupno: Math.round(ukupno(p) * 10000) / 10000,
     zavrseniDokumenti: p.zavrseniDokumenti,
     status: p.status,
   }));
 
-  // Sortiranje od najboljeg ka najlošijem prosjeku
-  withProsek.sort((a, b) => b.prosek - a.prosek);
+  // Sortiranje od najboljeg ka najlošijem (najveći zbir prvi)
+  withUkupno.sort((a, b) => b.ukupno - a.ukupno);
 
-  withProsek.forEach((p, i) => {
+  withUkupno.forEach((p, i) => {
     p.rang = i + 1;
   });
 
   const TARGET_IME = normalize(TARGET_IME_RAW);
   const TARGET_PREZIME = normalize(TARGET_PREZIME_RAW);
 
-  const target = withProsek.find(
+  const target = withUkupno.find(
     (p) =>
       normalize(p.ime) === TARGET_IME && normalize(p.prezime) === TARGET_PREZIME
   );
@@ -105,9 +105,9 @@ async function main() {
     updatedAt: new Date().toISOString(),
     grupa: "Geografija",
     profil: "Geoprostorni analitičar",
-    ukupnoKandidata: withProsek.length,
+    ukupnoKandidata: withUkupno.length,
     target: target || null,
-    lista: withProsek,
+    lista: withUkupno,
   };
 
   const fs = await import("node:fs/promises");
@@ -115,7 +115,7 @@ async function main() {
 
   if (target) {
     console.log(
-      `Pavle Palikuća: pozicija ${target.rang} od ${withProsek.length}, prosjek ${target.prosek}`
+      `Pavle Palikuća: pozicija ${target.rang} od ${withUkupno.length}, ukupno ${target.ukupno}`
     );
   } else {
     console.warn("Pavle Palikuća nije pronađen u filtriranoj listi!");

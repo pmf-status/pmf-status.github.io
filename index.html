@@ -202,7 +202,7 @@
 <div class="wrap">
   <div class="eyebrow">ePMF · Prijemni ispit 2026</div>
   <h1>Pavle Palikuća</h1>
-  <div class="subtitle">Geografija — Geoprostorni analitičar · rang po prosjeku 4 godine srednje škole</div>
+  <div class="subtitle">Geografija — Geoprostorni analitičar · rang po zbiru ocjena 4 godine srednje škole</div>
 
   <div id="content" class="card">
     <div class="loading">Učitavanje podataka…</div>
@@ -212,7 +212,7 @@
     <summary>Prikaži cijelu rang listu</summary>
     <table id="rankTable">
       <thead>
-        <tr><th>#</th><th>Ime i prezime</th><th>Prosjek</th></tr>
+        <tr><th>#</th><th>Ime i prezime</th><th>Ukupno</th></tr>
       </thead>
       <tbody id="rankBody"></tbody>
     </table>
@@ -235,8 +235,8 @@
           <div class="rank-of">od ${data.ukupnoKandidata} prijavljenih</div>
           <div class="stats">
             <div class="stat">
-              <div class="num">${t.prosek.toFixed(4)}</div>
-              <div class="lbl">Prosjek</div>
+              <div class="num">${t.ukupno.toFixed(2)}</div>
+              <div class="lbl">Ukupno (zbir 4 godine)</div>
             </div>
           </div>
         `;
@@ -255,7 +255,7 @@
         <tr class="${t && p.rang === t.rang ? 'highlight' : ''}">
           <td>${p.rang}</td>
           <td>${p.ime} ${p.prezime}</td>
-          <td>${p.prosek.toFixed(4)}</td>
+          <td>${p.ukupno.toFixed(2)}</td>
         </tr>
       `).join('');
 
