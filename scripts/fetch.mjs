@@ -9,8 +9,8 @@ const GRUPA_ID = 11; // Geografija
 const PROFIL_ID = 11; // Geoprostorni analitičar
 
 // Osoba čiju poziciju pratimo
-const TARGET_IME = "pavle";
-const TARGET_PREZIME = "palikuća";
+const TARGET_IME_RAW = "Pavle";
+const TARGET_PREZIME_RAW = "Palikuća";
 
 function normalize(str) {
   return (str || "")
@@ -28,18 +28,53 @@ async function main() {
   const res = await fetch(API_URL, {
     headers: {
       accept: "application/json, text/plain, */*",
-      "user-agent": "Mozilla/5.0 (compatible; PavleRankBot/1.0)",
+      "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      referer: "https://eportal.pmf.uns.ac.rs/",
+      origin: "https://eportal.pmf.uns.ac.rs",
     },
   });
 
+  console.log(`HTTP status: ${res.status} ${res.statusText}`);
+
   if (!res.ok) {
+    const body = await res.text();
+    console.error("Tijelo odgovora (prvih 500 karaktera):", body.slice(0, 500));
     throw new Error(`API odgovor nije OK: ${res.status} ${res.statusText}`);
   }
 
-  const all = await res.json();
+  const raw = await res.text();
+  let all;
+  try {
+    all = JSON.parse(raw);
+  } catch (e) {
+    console.error("Odgovor nije validan JSON. Prvih 500 karaktera:", raw.slice(0, 500));
+    throw e;
+  }
+
+  if (!Array.isArray(all)) {
+    console.error("Odgovor nije niz. Tip:", typeof all, "Sadržaj (prvih 500 kar.):", JSON.stringify(all).slice(0, 500));
+    throw new Error("Neočekivan format odgovora");
+  }
+
+  console.log(`Ukupno kandidata u odgovoru: ${all.length}`);
+
+  // dijagnostika: pronađi sve zapise sa prezimenom koje liči na "Palikuća",
+  // bez obzira na grupu/profil filter, da vidimo da li uopšte postoji u odgovoru
+  const possibleMatches = all.filter((p) =>
+    normalize(p.prezime).includes("palikuc")
+  );
+  console.log(
+    `Zapisi koji liče na "Palikuća" u CIJELOM odgovoru (bilo koja grupa):`,
+    JSON.stringify(possibleMatches)
+  );
 
   const filtered = all.filter(
     (p) => p.sfrPrijemniGrupa === GRUPA_ID && p.sfrPrijemniProfil === PROFIL_ID
+  );
+
+  console.log(
+    `Kandidata u grupi/profilu (${GRUPA_ID}/${PROFIL_ID}): ${filtered.length}`
   );
 
   const withProsek = filtered.map((p) => ({
@@ -57,6 +92,9 @@ async function main() {
   withProsek.forEach((p, i) => {
     p.rang = i + 1;
   });
+
+  const TARGET_IME = normalize(TARGET_IME_RAW);
+  const TARGET_PREZIME = normalize(TARGET_PREZIME_RAW);
 
   const target = withProsek.find(
     (p) =>
