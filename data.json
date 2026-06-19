@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-19T05:32:26.316Z",
+  "updatedAt": "2026-06-19T08:23:43.458Z",
   "grupa": "Geografija",
   "profil": "Geoprostorni analitičar",
   "ukupnoKandidata": 5,
@@ -8,8 +8,8 @@
     "srednjeIme": "Predrag",
     "prezime": "Palikuća",
     "ukupno": 16.77,
-    "zavrseniDokumenti": true,
-    "status": "nepotvrđena",
+    "zavrseniDokumenti": false,
+    "status": "potvrđena",
     "rang": 4
   },
   "lista": [
@@ -45,8 +45,8 @@
       "srednjeIme": "Predrag",
       "prezime": "Palikuća",
       "ukupno": 16.77,
-      "zavrseniDokumenti": true,
-      "status": "nepotvrđena",
+      "zavrseniDokumenti": false,
+      "status": "potvrđena",
       "rang": 4
     },
     {
