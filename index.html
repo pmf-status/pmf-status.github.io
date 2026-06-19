@@ -13,6 +13,8 @@
     --clay:#c1693c;
     --teal:#5f8575;
     --line: rgba(27,42,35,0.12);
+    --send-orange:#D97757;
+    --send-orange-hover:#c4673f;
   }
 
   *{ box-sizing:border-box; }
@@ -128,6 +130,82 @@
     margin-top:18px;
   }
 
+  .refresh-row{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-top:28px;
+  }
+
+  .refresh-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--send-orange);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:12px 26px;
+    font-family:'Inter', sans-serif;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 1px 2px rgba(27,42,35,0.15);
+    transition:background 0.15s ease, transform 0.1s ease;
+  }
+
+  .refresh-btn:hover{
+    background:var(--send-orange-hover);
+  }
+
+  .refresh-btn:active{
+    transform:scale(0.97);
+  }
+
+  .refresh-btn:disabled{
+    opacity:0.6;
+    cursor:default;
+  }
+
+  .refresh-btn .icon{
+    display:inline-block;
+    transition:transform 0.5s ease;
+  }
+
+  .refresh-btn.spinning .icon{
+    animation:spin 0.8s linear infinite;
+  }
+
+  @keyframes spin{
+    to{ transform:rotate(360deg); }
+  }
+
+  .refresh-status{
+    font-size:13px;
+    color:rgba(27,42,35,0.55);
+    text-align:center;
+    max-width:480px;
+  }
+
+  .refresh-status.error{
+    color:var(--clay);
+  }
+
+  .live-badge{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--send-orange);
+    border:1px solid var(--send-orange);
+    border-radius:999px;
+    padding:2px 8px;
+    margin-left:8px;
+    vertical-align:middle;
+  }
+
   details{
     margin-top:40px;
   }
@@ -208,6 +286,14 @@
     <div class="loading">Učitavanje podataka…</div>
   </div>
 
+  <div class="refresh-row">
+    <button id="refreshBtn" class="refresh-btn" onclick="refreshLive()">
+      <span class="icon">⟳</span>
+      <span class="label">Osvježi sada</span>
+    </button>
+    <div id="refreshStatus" class="refresh-status"></div>
+  </div>
+
   <details id="listDetails">
     <summary>Prikaži cijelu rang listu</summary>
     <table id="rankTable">
@@ -220,51 +306,128 @@
 </div>
 
 <script>
-  async function load() {
+  const API_URL = "https://eportal.pmf.uns.ac.rs/ePMFWebServisi/prijemni/getPrijave";
+  const GRUPA_ID = 11; // Geografija
+  const PROFIL_ID = 11; // Geoprostorni analitičar
+  const TARGET_IME_RAW = "Pavle";
+  const TARGET_PREZIME_RAW = "Palikuća";
+
+  function normalize(str) {
+    return (str || "")
+      .toString()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function render(data, opts) {
+    opts = opts || {};
+    const content = document.getElementById('content');
+    const t = data.target;
+
+    if (t) {
+      content.innerHTML = `
+        <div class="rank-label">Trenutna pozicija ${opts.live ? '<span class="live-badge">live</span>' : ''}</div>
+        <div class="rank-number">#${t.rang}</div>
+        <div class="rank-of">od ${data.ukupnoKandidata} prijavljenih</div>
+        <div class="stats">
+          <div class="stat">
+            <div class="num">${t.ukupno.toFixed(2)}</div>
+            <div class="lbl">Ukupno (zbir 4 godine)</div>
+          </div>
+        </div>
+      `;
+    } else {
+      content.innerHTML = `<div class="empty">Pavle Palikuća nije pronađen u trenutnim podacima.</div>`;
+    }
+
+    let updated = document.getElementById('updatedLine');
+    if (!updated) {
+      updated = document.createElement('div');
+      updated.id = 'updatedLine';
+      updated.className = 'updated';
+      content.after(updated);
+    }
+    const dt = new Date(data.updatedAt);
+    updated.textContent = (opts.live ? 'Osvježeno upravo sada: ' : 'Ažurirano: ') + dt.toLocaleString('sr-RS');
+
+    const tbody = document.getElementById('rankBody');
+    tbody.innerHTML = data.lista.map(p => `
+      <tr class="${t && p.rang === t.rang ? 'highlight' : ''}">
+        <td>${p.rang}</td>
+        <td>${p.ime} ${p.prezime}</td>
+        <td>${p.ukupno.toFixed(2)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function computeFromRaw(all) {
+    const filtered = all.filter(
+      p => p.sfrPrijemniGrupa === GRUPA_ID && p.sfrPrijemniProfil === PROFIL_ID
+    );
+    const lista = filtered.map(p => ({
+      ime: p.ime,
+      srednjeIme: p.srednjeIme,
+      prezime: p.prezime,
+      ukupno: Math.round((p.uspeh1 + p.uspeh2 + p.uspeh3 + p.uspeh4) * 10000) / 10000,
+      zavrseniDokumenti: p.zavrseniDokumenti,
+      status: p.status,
+    }));
+    lista.sort((a, b) => b.ukupno - a.ukupno);
+    lista.forEach((p, i) => { p.rang = i + 1; });
+
+    const tIme = normalize(TARGET_IME_RAW);
+    const tPrezime = normalize(TARGET_PREZIME_RAW);
+    const target = lista.find(p => normalize(p.ime) === tIme && normalize(p.prezime) === tPrezime);
+
+    return {
+      updatedAt: new Date().toISOString(),
+      ukupnoKandidata: lista.length,
+      target: target || null,
+      lista,
+    };
+  }
+
+  async function loadInitial() {
     const content = document.getElementById('content');
     try {
       const res = await fetch('data.json?_=' + Date.now());
       if (!res.ok) throw new Error('Ne mogu da učitam data.json');
       const data = await res.json();
-
-      const t = data.target;
-      if (t) {
-        content.innerHTML = `
-          <div class="rank-label">Trenutna pozicija</div>
-          <div class="rank-number">#${t.rang}</div>
-          <div class="rank-of">od ${data.ukupnoKandidata} prijavljenih</div>
-          <div class="stats">
-            <div class="stat">
-              <div class="num">${t.ukupno.toFixed(2)}</div>
-              <div class="lbl">Ukupno (zbir 4 godine)</div>
-            </div>
-          </div>
-        `;
-      } else {
-        content.innerHTML = `<div class="empty">Pavle Palikuća nije pronađen u trenutnim podacima.</div>`;
-      }
-
-      const updated = document.createElement('div');
-      updated.className = 'updated';
-      const dt = new Date(data.updatedAt);
-      updated.textContent = 'Ažurirano: ' + dt.toLocaleString('sr-RS');
-      content.after(updated);
-
-      const tbody = document.getElementById('rankBody');
-      tbody.innerHTML = data.lista.map(p => `
-        <tr class="${t && p.rang === t.rang ? 'highlight' : ''}">
-          <td>${p.rang}</td>
-          <td>${p.ime} ${p.prezime}</td>
-          <td>${p.ukupno.toFixed(2)}</td>
-        </tr>
-      `).join('');
-
+      render(data, { live: false });
     } catch (err) {
       content.innerHTML = `<div class="empty">Greška pri učitavanju podataka: ${err.message}</div>`;
     }
   }
 
-  load();
+  async function refreshLive() {
+    const btn = document.getElementById('refreshBtn');
+    const status = document.getElementById('refreshStatus');
+    btn.disabled = true;
+    btn.classList.add('spinning');
+    status.className = 'refresh-status';
+    status.textContent = 'Povlačim najsvježije podatke…';
+
+    try {
+      const res = await fetch(API_URL, {
+        headers: { accept: 'application/json, text/plain, */*' },
+      });
+      if (!res.ok) throw new Error(`Server je vratio grešku (${res.status})`);
+      const all = await res.json();
+      const data = computeFromRaw(all);
+      render(data, { live: true });
+      status.textContent = '';
+    } catch (err) {
+      status.className = 'refresh-status error';
+      status.textContent = 'Direktno osvježavanje iz browsera nije uspjelo (vjerovatno ograničenje servera - CORS). Podaci ispod su i dalje posljednji sačuvani.';
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('spinning');
+    }
+  }
+
+  loadInitial();
 </script>
 
 </body>

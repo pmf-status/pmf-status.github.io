@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-19T08:23:43.458Z",
+  "updatedAt": "2026-06-19T00:00:00.000Z",
   "grupa": "Geografija",
   "profil": "Geoprostorni analitičar",
   "ukupnoKandidata": 5,
@@ -8,55 +8,15 @@
     "srednjeIme": "Predrag",
     "prezime": "Palikuća",
     "ukupno": 16.77,
-    "zavrseniDokumenti": false,
-    "status": "potvrđena",
+    "zavrseniDokumenti": true,
+    "status": "nepotvrđena",
     "rang": 4
   },
   "lista": [
-    {
-      "ime": "Anja",
-      "srednjeIme": "Ivana",
-      "prezime": "Gajić",
-      "ukupno": 18.41,
-      "zavrseniDokumenti": false,
-      "status": "nepotvrđena",
-      "rang": 1
-    },
-    {
-      "ime": "Luka",
-      "srednjeIme": "Suzana",
-      "prezime": "Tomić",
-      "ukupno": 17.84,
-      "zavrseniDokumenti": false,
-      "status": "nepotvrđena",
-      "rang": 2
-    },
-    {
-      "ime": "Stefan",
-      "srednjeIme": "Milan",
-      "prezime": "Dmitrović",
-      "ukupno": 17.01,
-      "zavrseniDokumenti": false,
-      "status": "nepotvrđena",
-      "rang": 3
-    },
-    {
-      "ime": "Pavle",
-      "srednjeIme": "Predrag",
-      "prezime": "Palikuća",
-      "ukupno": 16.77,
-      "zavrseniDokumenti": false,
-      "status": "potvrđena",
-      "rang": 4
-    },
-    {
-      "ime": "Stevan",
-      "srednjeIme": "Srđan",
-      "prezime": "Sremčević",
-      "ukupno": 15.28,
-      "zavrseniDokumenti": false,
-      "status": "nepotvrđena",
-      "rang": 5
-    }
+    { "ime": "Anja", "srednjeIme": "Ivana", "prezime": "Gajić", "ukupno": 18.41, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 1 },
+    { "ime": "Luka", "srednjeIme": "Suzana", "prezime": "Tomić", "ukupno": 17.84, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 2 },
+    { "ime": "Stefan", "srednjeIme": "Milan", "prezime": "Dmitrović", "ukupno": 17.01, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 3 },
+    { "ime": "Pavle", "srednjeIme": "Predrag", "prezime": "Palikuća", "ukupno": 16.77, "zavrseniDokumenti": true, "status": "nepotvrđena", "rang": 4 },
+    { "ime": "Stevan", "srednjeIme": "Srđan", "prezime": "Sremčević", "ukupno": 15.28, "zavrseniDokumenti": false, "status": "nepotvrđena", "rang": 5 }
   ]
 }
