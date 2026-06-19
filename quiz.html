@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vježbanje — Geografija PMF prijemni</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --ink: #1b2a23;
+    --parchment: #f3ead9;
+    --clay: #c1693c;
+    --teal: #5f8575;
+    --line: rgba(27,42,35,0.12);
+    --correct: #3a7d55;
+    --wrong: #c1693c;
+    --correct-bg: rgba(58,125,85,0.1);
+    --wrong-bg: rgba(193,105,60,0.1);
+    --btn-orange: #D97757;
+    --btn-orange-hover: #c4673f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  .contours {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--teal);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 28px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: clamp(24px, 5vw, 36px);
+    line-height: 1.15;
+    margin-bottom: 28px;
+  }
+
+  /* ── SETUP SCREEN ── */
+  #setupScreen { }
+
+  .setup-card {
+    background: #fffaf0;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+
+  .setup-card h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .setup-card p {
+    font-size: 14px;
+    color: rgba(27,42,35,0.65);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .num-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    background: var(--parchment);
+    color: var(--ink);
+    outline: none;
+    margin-bottom: 16px;
+    transition: border-color 0.15s;
+  }
+  .num-input:focus { border-color: var(--teal); }
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .radio-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background: var(--parchment);
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .radio-opt:hover { border-color: var(--teal); }
+  .radio-opt input { margin-top: 2px; accent-color: var(--teal); }
+  .radio-opt.selected { border-color: var(--teal); background: rgba(95,133,117,0.07); }
+  .radio-opt strong { display: block; margin-bottom: 2px; }
+  .radio-opt span { color: rgba(27,42,35,0.6); font-size: 13px; }
+
+  .start-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--btn-orange);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .start-btn:hover { background: var(--btn-orange-hover); }
+  .start-btn:active { transform: scale(0.98); }
+
+  /* ── QUIZ SCREEN ── */
+  #quizScreen { display: none; }
+
+  .progress-bar-wrap {
+    background: var(--line);
+    border-radius: 999px;
+    height: 6px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 13px;
+    color: rgba(27,42,35,0.5);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .q-category {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-family: 'Source Serif 4', serif;
+    font-size: clamp(17px, 3.5vw, 22px);
+    font-weight: 600;
+    line-height: 1.45;
+    margin-bottom: 28px;
+  }
+
+  /* Multiple choice options */
+  .mc-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .mc-btn {
+    background: #fffaf0;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+  }
+  .mc-btn:hover:not(:disabled) { border-color: var(--teal); background: rgba(95,133,117,0.06); }
+  .mc-btn:disabled { cursor: default; }
+  .mc-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); font-weight: 600; }
+  .mc-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .mc-btn.reveal-correct { border-color: var(--correct); background: var(--correct-bg); }
+
+  /* Text input mode */
+  .text-input-wrap {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .text-answer-input {
+    flex: 1;
+    padding: 13px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background: #fffaf0;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .text-answer-input:focus { border-color: var(--teal); }
+  .text-answer-input.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .text-answer-input.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+
+  .submit-btn {
+    padding: 13px 22px;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .submit-btn:hover { background: #4a6d5f; }
+  .submit-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .feedback-box {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .feedback-box.correct { background: var(--correct-bg); color: var(--correct); border: 1px solid rgba(58,125,85,0.25); }
+  .feedback-box.wrong { background: var(--wrong-bg); color: var(--wrong); border: 1px solid rgba(193,105,60,0.25); }
+
+  .next-btn {
+    padding: 12px 28px;
+    background: var(--btn-orange);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: none;
+  }
+  .next-btn:hover { background: var(--btn-orange-hover); }
+
+  .skip-btn {
+    padding: 12px 20px;
+    background: transparent;
+    color: rgba(27,42,35,0.45);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 10px;
+  }
+  .skip-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  .btn-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  /* ── RESULTS SCREEN ── */
+  #resultsScreen { display: none; }
+
+  .score-card {
+    background: #fffaf0;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 36px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .score-num {
+    font-family: 'Source Serif 4', serif;
+    font-size: clamp(56px, 16vw, 88px);
+    font-weight: 700;
+    color: var(--teal);
+    line-height: 1;
+  }
+
+  .score-of {
+    font-size: 16px;
+    color: rgba(27,42,35,0.55);
+    margin-top: 4px;
+    margin-bottom: 20px;
+  }
+
+  .score-pct {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .score-pct.great { background: var(--correct-bg); color: var(--correct); }
+  .score-pct.ok { background: rgba(193,105,60,0.1); color: var(--clay); }
+  .score-pct.bad { background: var(--wrong-bg); color: var(--wrong); }
+
+  .mistakes-section h3 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .mistake-item {
+    background: #fffaf0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .mistake-q {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+
+  .mistake-your {
+    color: var(--wrong);
+    margin-bottom: 3px;
+  }
+
+  .mistake-correct {
+    color: var(--correct);
+    font-weight: 600;
+  }
+
+  .restart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: var(--btn-orange);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background 0.15s;
+  }
+  .restart-btn:hover { background: var(--btn-orange-hover); }
+
+  .all-correct-msg {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--correct);
+    font-weight: 600;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+
+<svg class="contours" viewBox="0 0 800 1200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#1b2a23" stroke-width="1.2">
+    <path d="M -50 100 C 150 60, 300 160, 500 90 S 800 140, 900 80" />
+    <path d="M -50 180 C 150 140, 300 240, 500 170 S 800 220, 900 160" />
+    <path d="M -50 260 C 150 220, 300 320, 500 250 S 800 300, 900 240" />
+    <path d="M -50 500 C 200 460, 350 560, 550 480 S 850 540, 900 470" />
+    <path d="M -50 570 C 200 530, 350 630, 550 550 S 850 610, 900 540" />
+    <path d="M -50 640 C 200 600, 350 700, 550 620 S 850 680, 900 610" />
+    <path d="M -50 900 C 180 850, 380 980, 560 900 S 820 950, 900 880" />
+    <path d="M -50 970 C 180 920, 380 1050, 560 970 S 820 1020, 900 950" />
+  </g>
+</svg>
+
+<div class="wrap">
+  <a href="index.html" class="back-link">← Nazad na rang listu</a>
+
+  <!-- SETUP -->
+  <div id="setupScreen">
+    <div class="eyebrow">ePMF · Vježbanje</div>
+    <h1>Priprema za prijemni</h1>
+
+    <div class="setup-card">
+      <h2>Mod vježbanja</h2>
+      <p>Odaberi kako želiš vježbati.</p>
+      <div class="radio-group" id="modeGroup">
+        <label class="radio-opt selected" id="opt-mc">
+          <input type="radio" name="mode" value="mc" checked />
+          <div>
+            <strong>Kviz — 4 ponuđena odgovora</strong>
+            <span>Svaki put drugačija kombinacija netačnih odgovora</span>
+          </div>
+        </label>
+        <label class="radio-opt" id="opt-text">
+          <input type="radio" name="mode" value="text" />
+          <div>
+            <strong>Unos teksta — ukucaj odgovor</strong>
+            <span>Prihvata djelimične odgovore, ne razlikuje velika/mala slova</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="setup-card">
+      <h2>Broj pitanja</h2>
+      <p>Koliko pitanja želiš u ovom krugu?</p>
+      <label class="field-label" for="numQ">Broj pitanja (1–300)</label>
+      <input type="number" id="numQ" class="num-input" min="1" max="300" value="20" />
+    </div>
+
+    <div class="setup-card">
+      <h2>Feedback</h2>
+      <p>Kada želiš da saznaš da li si tačno odgovorio?</p>
+      <div class="radio-group" id="feedbackGroup">
+        <label class="radio-opt selected" id="opt-immediate">
+          <input type="radio" name="feedback" value="immediate" checked />
+          <div>
+            <strong>Odmah — posle svakog pitanja</strong>
+            <span>Odmah vidiš da li si pogodio</span>
+          </div>
+        </label>
+        <label class="radio-opt" id="opt-end">
+          <input type="radio" name="feedback" value="end" />
+          <div>
+            <strong>Na kraju — rezultati tek na kraju</strong>
+            <span>Saznaš gdje si pogriješio tek kad završiš sve</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">Počni vježbanje →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizScreen">
+    <div class="eyebrow">ePMF · Vježbanje</div>
+    <div class="progress-label">
+      <span id="progressText">Pitanje 1 od 20</span>
+      <span id="scoreText">0 tačno</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <div class="q-category" id="qCategory"></div>
+    <div class="q-text" id="qText"></div>
+
+    <!-- MC options -->
+    <div class="mc-options" id="mcOptions"></div>
+
+    <!-- Text input -->
+    <div id="textInputArea" style="display:none">
+      <div class="text-input-wrap">
+        <input type="text" class="text-answer-input" id="textAnswer" placeholder="Ukucaj odgovor…" autocomplete="off" />
+        <button class="submit-btn" id="submitTextBtn" onclick="submitText()">Provjeri</button>
+      </div>
+    </div>
+
+    <div class="feedback-box" id="feedbackBox"></div>
+
+    <div class="btn-row">
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Sljedeće pitanje →</button>
+      <button class="skip-btn" id="skipBtn" onclick="skipQuestion()">Preskoči</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsScreen">
+    <div class="eyebrow">ePMF · Rezultati</div>
+    <h1>Rezultati</h1>
+    <div class="score-card">
+      <div class="score-num" id="scoreNum"></div>
+      <div class="score-of" id="scoreOf"></div>
+      <div class="score-pct" id="scorePct"></div>
+    </div>
+
+    <div class="mistakes-section" id="mistakesSection">
+      <h3>Greške</h3>
+      <div id="mistakesList"></div>
+    </div>
+
+    <div style="text-align:center">
+      <button class="restart-btn" onclick="goSetup()">↺ Ponovi vježbanje</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  BAZA PITANJA
+//  Format: { cat, q, a: [tačan, ...netačni x11] }
+//  Indeks 0 je uvijek tačan odgovor, ostatak su netačni.
+// ═══════════════════════════════════════════════════════
+const QDB = [
+// ── GEOGRAFIJA 1. RAZRED ──
+{cat:"Geo 1. razred", q:"Ideju temperaturnog gradijenta, na primjeru vulkana Čimboraso, predstavio je:", a:["Aleksandar fon Humbolt","Karl Riter","Bernhard Varenijus","Eratosten","Klaudije Ptolemej","Imanel Kant","Majnder Veren","Alfred Veger","Franc Boas","Džordž Perkins Mars","Ferdinand fon Richthofen","Vidal de la Blaš"]},
+{cat:"Geo 1. razred", q:"Kartografska disciplina koja koristi računarske programe za prikupljanje, analizu i sintezu prostornih podataka i kreiranje geografskih karata naziva se:", a:["digitalna kartografija","tematska kartografija","aerofotogrametrija","topografija","geodezija","fotogrametrija","batimetrija","planimetrija","hidrografija","kartometrija","stereokartogeafija","georadar"]},
+{cat:"Geo 1. razred", q:"Mišljenje da Zemlja ima oblik valjka koji lebdi u slobodnom prostoru zagovarao je:", a:["Anaksimander","Tales iz Mileta","Pitik","Eratosten","Aristotel","Platon","Strabon","Ptolomej","Herodot","Arkimed","Ksenofan","Empedokle"]},
+{cat:"Geo 1. razred", q:"'Ocem geografije' smatra se:", a:["Eratosten","Strabon","Ptolemej","Herodot","Tales","Aristotel","Hipokrat","Anaksimander","Pitagora","Ksenofan","Pausanija","Plutarh"]},
+{cat:"Geo 1. razred", q:"Ko je predvodio pomorsku ekspediciju kojom je dokazan sferni oblik Zemlje?", a:["Fernando Magelan","Kristofor Kolumbo","Vasko da Gama","Džon Kabot","Amerigo Vespuči","Bartolomeo Dijaz","Džejms Kuk","Fransisko Pizaro","Frensis Drejk","Pedro Kabal","Žak Kartije","Fridrih Korc"]},
+{cat:"Geo 1. razred", q:"Prilikom prelaska datumske granice dodajemo jedan dan kada se krećemo:", a:["od istoka ka zapadu","od zapada ka istoku","od severa ka jugu","od juga ka severu","duž ekvatorijalne linije","u pravcu nultog meridijana","duž povratnika Raka","duž polarnog kruga","u smjeru kazaljke na satu","u smjeru suprotnom od kretanja Sunca","od ekvatora ka polovima","duž 90° geografske dužine"]},
+{cat:"Geo 1. razred", q:"Ljetno računanje vremena počinje posljednje nedjelje u mjesecu:", a:["martu","aprilu","februaru","januaru","maju","oktobru","novembru","decembru","septembru","junu","avgustu","julu"]},
+{cat:"Geo 1. razred", q:"Zimsko računanje vremena počinje posljednje nedjelje u mjesecu:", a:["oktobru","novembru","septembru","avgustu","martu","aprilu","januaru","februaru","junu","julu","decembru","maju"]},
+{cat:"Geo 1. razred", q:"U kom mjesecu je Zemlja najbliža Suncu?", a:["januaru","februaru","martu","junu","julu","avgustu","decembru","novembru","aprilu","maju","septembru","oktobru"]},
+{cat:"Geo 1. razred", q:"U kom mjesecu je Zemlja najudaljenija od Sunca?", a:["julu","junu","avgustu","januaru","decembru","februaru","maju","oktobru","septembru","novembru","aprilu","martu"]},
+{cat:"Geo 1. razred", q:"Na dan martovske ravnodnevnice (20. mart) na južnoj hemisferi počinje:", a:["jesen","proljeće","ljeto","zima","suva sezona","monsunska sezona","polarni dan","polarni mrak","ekvinokcij","solsticij","perihelij","afelij"]},
+{cat:"Geo 1. razred", q:"Koje godine je Milutin Milanković izvršio reviziju julijanskog kalendara?", a:["1923. godine","1912. godine","1900. godine","1935. godine","1918. godine","1905. godine","1941. godine","1887. godine","1930. godine","1946. godine","1896. godine","1915. godine"]},
+{cat:"Geo 1. razred", q:"Koliko dana ima godina u lunarnom kalendaru?", a:["354 dana","365 dana","360 dana","350 dana","366 dana","355 dana","364 dana","370 dana","348 dana","357 dana","362 dana","352 dana"]},
+{cat:"Geo 1. razred", q:"Dio fizičke geografije koji se bavi proučavanjem razvoja geografskog omotača Zemlje u prošlosti naziva se:", a:["paleogeografija","geomorfologija","klimatologija","hidrologija","pedogeografija","biogeografija","litogeografija","hronogeografija","geoarheologija","paleoklimatologija","stratigrafija","paleoekologija"]},
+{cat:"Geo 1. razred", q:"Kenozoik je počeo prije oko:", a:["66 miliona godina","100 miliona godina","250 miliona godina","541 miliona godina","23 miliona godina","145 miliona godina","35 miliona godina","80 miliona godina","50 miliona godina","200 miliona godina","300 miliona godina","400 miliona godina"]},
+{cat:"Geo 1. razred", q:"Na koliko perioda je podijeljeni mezozoik?", a:["tri perioda","dva perioda","četiri perioda","pet perioda","šest perioda","jedan period","sedam perioda","osam perioda","devet perioda","deset perioda","jedanaest perioda","dvanaest perioda"]},
+{cat:"Geo 1. razred", q:"Sredinom koje periode je došlo do razdvajanja Pangeje na Lauraziju i Gondvanu?", a:["jure","trijasa","krede","perma","karbona","devona","silura","ordovicijuma","kambrijuma","paleogena","neogena","kvartara"]},
+{cat:"Geo 1. razred", q:"Periodi intenzivnih orогеnih pokreta kojima su nastale planine nazivaju se:", a:["orogeneze","epirogeneze","dijageneze","metamorfogeneze","vulkogeneze","sedimentogeneze","litosferne oscilacije","tektonske faze","peneplenizacije","morfogeneze","astrobleme","paleogen"]},
+{cat:"Geo 1. razred", q:"Kojom orogenezom su nastali Himalaji, najviše planine na svijetu?", a:["alpskom orogenezom","variscijskom orogenezom","kaledonskom orogenezom","hercinskom orogenezom","laramijskom orogenezom","kimjerijskom orogenezom","azijskom orogenezom","bajkalskom orogenezom","gotskom orogenezom","ardenske orogenezom","salijskom orogenezom","atičkom orogenezom"]},
+{cat:"Geo 1. razred", q:"Koja era se naziva dobom dinosaurusa?", a:["mezozoik","paleozoik","kenozoik","proterozoik","arhaj","fanerozoik","kambrijum","perm","kreda","neogen","paleogen","kvartarim"]},
+{cat:"Geo 1. razred", q:"Koja era se naziva dobom sisara?", a:["kenozoik","mezozoik","paleozoik","proterozoik","arhaj","fanerozoik","kreda","perm","triasa","jura","devona","silur"]},
+{cat:"Geo 1. razred", q:"Zemljina kora i gornji stjenoviti dio mantla objedinjeno imaju naziv:", a:["litosfera","hidrosfera","atmosfera","biosfera","pedosfera","astenosfera","mezosfera","bariosfera","geosfera","kriosfera","noosfera","tehnosfera"]},
+{cat:"Geo 1. razred", q:"Najtvrdji mineral u prirodi je:", a:["dijamant","kvarc","korund","topaz","ortoklas","apatit","fluorit","kalcit","talk","hematit","magnetit","pirit"]},
+{cat:"Geo 1. razred", q:"Koja vrsta magmatske stijene je korišćena za spomnik Neznanom junaku na Avali?", a:["gabro","granit","bazalt","dijabaz","riolit","obsidijan","pumiks","pegmatit","andezit","diorit","sijenit","peridotit"]},
+{cat:"Geo 1. razred", q:"Koja vrsta sedimentne stijene je korišćena pri gradnji Keopsove piramide u Gizi?", a:["krečnjak","pješčar","konglomerat","gips","skriljac","kreda","lapor","dolomit","tuf","breča","radiolarit","fliš"]},
+{cat:"Geo 1. razred", q:"Kojom vrstom metamorfne stijene je obložen Mauzolej Tadž Mahal u Indiji?", a:["mermerom","kvarcitom","škriljevcem","filitom","gnajsom","amfibolitom","eklogitom","rožnjakom","migmatitom","hornfelsom","sericitskim škriljevcem","grafitnim škriljevcem"]},
+{cat:"Geo 1. razred", q:"Proces podvlačenja okeanske pod kontinentalnu ploču naziva se:", a:["subdukcija","obdukcija","riftovanje","kolizija","transkripcija","akrecija","evaporizacija","denuodacija","abrazija","deponija","isostazija","epirogeneza"]},
+{cat:"Geo 1. razred", q:"Proces razdvajanja i razlamanja kontinentalnih kora naziva se:", a:["riftovanje","subdukcija","obdukcija","orogeneza","tektonizacija","vulkanizacija","magmatizam","metamorfizam","epirogeneneza","izostazija","peneplenizacija","ekstruzija"]},
+{cat:"Geo 1. razred", q:"Otvor u obliku lijevka na vrhu vulkanske kupe naziva se:", a:["krater ili grotlo","kaldera","fumarola","solfattara","bomba","lapili","tepra","tuf","pluton","lakolit","batolit","dajk"]},
+{cat:"Geo 1. razred", q:"Široki krateri kod eksplozivnih vulkana nazivaju se:", a:["caldere","kraters","bocae","fummaroles","magminski kanali","kraterni jezeri","vulkanski baseni","teprani lijevci","lave pukotine","magmeni otvori","eruptivni lijevci","žarišni krateri"]},
+{cat:"Geo 1. razred", q:"Kom tipu vulkanskih erupcija pripadaju mirne erupcije sa izlivima bazaltne lave koja se polako prelijeva preko ivice kratera?", a:["havajskom tipu","vezuvskom tipu","pelijanskom tipu","strombolijanskom tipu","vulkanijskom tipu","ultravulkanijskom tipu","plinijskom tipu","freatskom tipu","subglacijalnom tipu","surtscjskom tipu","plošnom tipu","centralnom tipu"]},
+{cat:"Geo 1. razred", q:"Jake, razorne erupcije posle dugog perioda mirovanja su odlika kog tipa vulkanskih erupcija?", a:["vezuvskog tipu","havajskom tipu","pelijanskog tipu","strombolijanskog tipu","vulkanijskog tipu","plinijskog tipu","ultraplunijanskog tipu","freatskog tipu","subglacijalnog tipu","surtscjskog tipu","eksplozivnog tipu","fisurnog tipu"]},
+{cat:"Geo 1. razred", q:"Merkalijeva (MSC) skala, kojom se mjeri jačina oštećenja zemljotresima, ima:", a:["12 stepeni","10 stepeni","8 stepeni","15 stepeni","7 stepeni","9 stepeni","16 stepeni","6 stepeni","20 stepeni","14 stepeni","5 stepeni","11 stepeni"]},
+{cat:"Geo 1. razred", q:"Najjači zemljotres u novijoj istoriji zabilježen je u:", a:["Čileu","Japanu","Indoneziji","Kini","Meksiku","Turskoj","Grčkoj","Iranu","SAD-u","Indiji","Avganistanu","Italiji"]},
+{cat:"Geo 1. razred", q:"Koliko kontinenata postoji na Zemlji?", a:["sedam","šest","osam","pet","devet","četiri","deset","tri","jedanaest","dvanaest","dva","jedan"]},
+{cat:"Geo 1. razred", q:"Najviši vrh Sjeverne Amerike (6.190 m) nalazi se na Sjevernoameričkim Kordiljerima i nosi naziv:", a:["Denali","Logan","Orizaba","Popocatepetl","Vit ni","Elbert","Rai ner","Shasta","Hood","Makit kinli","Foraker","Snider"]},
+{cat:"Geo 1. razred", q:"Najpoznatiji i najduži podmorski greben zove se:", a:["Srednjeatlantski greben","Tihookeanski greben","Indijskookeanski greben","Arktički greben","Aravijski greben","Kari bski greben","Indonezijski greben","Japanski greben","Peruan ski greben","Čilean ski greben","Gal apagos ki greben","Muri ki greben"]},
+{cat:"Geo 1. razred", q:"Materije i prirodne pojave koje dovode do erozije nazivaju se:", a:["agensi","faktori","elementi","procesi","uzroci","mehanizmi","pokretači","medijumi","vektori","katalizatori","impulsi","stimuli"]},
+{cat:"Geo 1. razred", q:"Temperatura vazduha, vode, kristalizacija soli i biljke su agensi kog tipa erozije:", a:["mehaničke erozije","hemijske erozije","biološke erozije","vodne erozije","vjetrene erozije","ledničke erozije","morske erozije","fluvijalne erozije","pluvijalne erozije","krioklastike","solflucije","sufozije"]},
+{cat:"Geo 1. razred", q:"Točila i sipari su oblici reljefa nastali:", a:["padinskin procesima","fluvijalnim procesima","glacijalnim procesima","eolskim procesima","krškim procesima","abrazivnim procesima","tektonskim procesima","vulkanskim procesima","sufozijskim procesima","soliflukcijskim procesima","gravitacionim procesima","nivalnim procesima"]},
+{cat:"Geo 1. razred", q:"Kupasto uzvišenje koje nastaje taloženje riječnog materijala na mjestu gdje strmo korito bočne pritoke izlazi na dolinsvo dno glavne rijeke naziva se:", a:["plavina","delta","aluvijalna ravnica","terasa","meander","priobalje","lesna zaravan","naplavna ravnica","riječna greda","šljunak","sprud","rječna ada"]},
+{cat:"Geo 1. razred", q:"Najduža pećina na svijetu nalazi se u SAD i naziva se:", a:["Mamutska","Lechuguilla","Sistema Sac Actun","Jewel Cave","Wind Cave","Sistema Ox Bel Ha","Optima Cave","Ozark Cave","Carlsbad Caverns","Florida Caverns","Mammoth Onyx","Blowing Rock Cave"]},
+{cat:"Geo 1. razred", q:"Najdublja jama (podzemni kraški oblik reljefa) na svijetu nalazi se na:", a:["Kavkazu","Alpima","Pirinejima","Uraolu","Skandinavskim planinama","Karpatima","Dinara","Himalajima","Andama","Rokijima","Atlasu","Apeninima"]},
+{cat:"Geo 1. razred", q:"Ovalno udubljenje u kome se nagomilava ledena masa naziva se:", a:["cirk","dolina","klisura","kotlin","fjord","esker","drumlin","morena","baza","sert","nunatak","kvar"]},
+{cat:"Geo 1. razred", q:"Duboki i dugački zaliv strmih strana, u višim geografskim širinama, naziva se:", a:["fjord","ria","laguna","kanal","tjesnac","estuarij","zaton","uvala","liman","delta","zaljev","akvatorij"]},
+{cat:"Geo 1. razred", q:"Bledsko jezero formirano je u:", a:["terminalnom basenu","tektonskom basenu","kraškom polju","vulkanskom krateru","klizišnom basenu","barijernom basenu","ledničkom cirku","glacijalnoj dolini","erozionom basenu","aluvijalnoj ravnici","marinskok basenu","rječnoj meandri"]},
+{cat:"Geo 1. razred", q:"Suhe poligentetske doline koje nastaju u pustinjama nazivaju se:", a:["uadi","kanjoni","kule","draje","aroje","sebre","hammade","ergi","gassi","šoti","gara","tafoni"]},
+{cat:"Geo 1. razred", q:"Dine u obliku srpova nazivaju se:", a:["barhani","seifi","nabojne dine","zvjezdane dine","poprečne dine","uzdužne dine","parabolične dine","kopulaste dine","reverzne dine","simbiotske dine","lijevkaste dine","obalne dine"]},
+{cat:"Geo 1. razred", q:"Najveća pješćara u Srbiji nalazi se u Banatu i nosi naziv:", a:["Deliblatska pješćara","Suboticka pješćara","Apatin ski pijesak","Titelski pijesak","Kularni pijesak","Posavski pijesak","Sremska pješćara","Omoljiška pješćara","Kosovska pješćara","Šumadijska pješćara","Negotinska pješćara","Mačvanska pješćara"]},
+{cat:"Geo 1. razred", q:"Mehaničkom erozijom talasa nastaje:", a:["marinski proces ili abrazija","akumulacija","korazija","deflacija","erozija tla","pluvijalna erozija","fluvijalna erozija","glacijalana erozija","livararna erozija","solifluksija","sufozija","impakcija"]},
+{cat:"Geo 1. razred", q:"Iznad talasnih potkopina nastaje vertikalni odsek koji se naziva:", a:["klif","žalo","plaža","delta","tombolo","abrazivna platforma","marinska terasa","morska greda","sedra","barijerski greben","grebenska kosa","esker"]},
+{cat:"Geo 1. razred", q:"Država sa najdužom obalom u Evropi je:", a:["Norveška","Grčka","Španija","Island","Britanija","Finska","Danska","Italija","Turska","Švedska","Portugal","Hrvatska"]},
+{cat:"Geo 1. razred", q:"Sveti Stefan u Crnoj Gori je tipičan primjer kojeg abrazionog oblika?", a:["tombolo (prevlake)","klif","plaža","delta","abrazivna platforma","morska terasa","žalo","lagun","isla","prolaz","greben","kanal"]},
+{cat:"Geo 1. razred", q:"Nauka koja izučava fizičke procese u atmosferi, a koji utiču na formiranje i promjenu vremena, naziva se:", a:["meteorologja","klimatologija","aeronomija","aerofizika","atmosferska hemija","kosmička fizika","geofizika","hidrolokalogija","okeonografija","astrocinamatika","paleoklimatologija","mikroklimatologija"]},
+{cat:"Geo 1. razred", q:"U sastavu vazduha najveći udio zauzima:", a:["azot","kiseonik","argon","ugljendiosid","neon","helijum","metan","kripton","vodonik","ozon","vodni para","xenon"]},
+{cat:"Geo 1. razred", q:"Prosječna visina do koje se troprosfera proteže iznad Zemlje iznosi:", a:["10 km","8 km","12 km","15 km","6 km","20 km","5 km","18 km","7 km","25 km","4 km","30 km"]},
+{cat:"Geo 1. razred", q:"U pojasu oko ekvatora debljina troposfere iznosi:", a:["16 km","10 km","12 km","20 km","8 km","14 km","18 km","6 km","22 km","25 km","30 km","5 km"]},
+{cat:"Geo 1. razred", q:"U kojemu dijelu atmosfere se nalazi ozonski omotač?", a:["u stratosferi","u troposferi","u mezosferi","u termosferi","u egzosferi","u jonosferi","u magnetosferi","u heliosferi","u protosferi","u biosferi","u parasferi","u litosferi"]},
+{cat:"Geo 1. razred", q:"Drugi naziv za Južnu svjetlost je:", a:["aurora australis","aurora borealis","zodijačka svjetlost","zodijački prsten","polarno sjanje","Kelvinova svjetlost","koronalna emisija","meteori","fireball","aurora polaris","liber australis","gemini flux"]},
+{cat:"Geo 1. razred", q:"Odnos između reflektovanog (odbijenog) i ukupnog zračenja koje padne na neko tijelo se naziva:", a:["albedo","emisivnost","transmitancija","upijanje","refleksija","prelamanje","indeks insolacije","faktor sjajnosti","helioindeks","lumenalni faktor","koeficijent difuzije","luminancija"]},
+{cat:"Geo 1. razred", q:"Instrument kojim se mjeri trajanje Sunčevog sjaja naziva se:", a:["heliograf","piranometar","pirgeometar","aktinometar","solarimetar","fotometar","radiometar","bolometar","solaroskop","heliostat","luminometar","fotosenzor"]},
+{cat:"Geo 1. razred", q:"Na svakih 100 m visine, temperatura vazduha pada za:", a:["0,65°C","0,5°C","1°C","0,3°C","0,8°C","0,2°C","1,2°C","0,4°C","1,5°C","0,9°C","0,7°C","2°C"]},
+{cat:"Geo 1. razred", q:"Najhladniji prostor Srbije se nalazi na:", a:["Pešterskoj visoravni","Staroj planini","Kopaoniku","Zlatiboru","Tari","Rtnju","Mokroj gori","Divčibarama","Fruškoj gori","Avali","Šar planini","Vlasini"]},
+{cat:"Geo 1. razred", q:"Lokalni vjetar mistral najčešće duva tokom kog godišnjeg doba?", a:["zime","proljeća","ljeta","jeseni","rano proljeće","kasno ljeto","rano jesen","kasna zima","početak proljeća","kasna jesen","kasno proljeće","sredina ljeta"]},
+{cat:"Geo 1. razred", q:"Vjetar koji brzo topi snijeg na Alpima naziva se:", a:["fen","bora","mistral","tramontana","levant","garbino","sirocco","kosava","jugo","tramun","burin","garbin"]},
+{cat:"Geo 1. razred", q:"Prelaz vodene pare u tečno stanje pri određenoj temperaturi naziva se:", a:["rosna tačka","sublimacija","kondenzacija","isparavanje","zasićenje","atmosferska vlaga","humulacija","aerosol","tačka mraza","oblačnost","maturacija","evapotranspiracija"]},
+{cat:"Geo 1. razred", q:"Kako nazivamo oblake koji se formiraju na visinama do 2.000 m?", a:["niski oblaci","srednji oblaci","visoki oblaci","konvektivni oblaci","stratusni oblaci","nimbusni oblaci","cirostatusni oblaci","altostratusni oblaci","kumulusni oblaci","kumulonimbusni oblaci","frontalni oblaci","orografski oblaci"]},
+{cat:"Geo 1. razred", q:"Kako stručno nazivamo paperaste oblake?", a:["cirusi","stratus","kumulus","nimbostratus","altostratus","altokumulus","kumulonimbus","cirostratus","cirokumulus","stratokomulus","nimbus","fractostratus"]},
+{cat:"Geo 1. razred", q:"Zamučenost prizemnog sloja vazduha, pri kojoj je vidljivost smanjena do 1 km a usljed kondenzacije vodene pare, naziva se:", a:["magla","izmaglica","dim","prašina","smog","aerosolna koprena","sumaglica","zamućenje","hidrosol","aeromist","suspenzija","oblak"]},
+{cat:"Geo 1. razred", q:"Oblast niskog vazdušnog pritiska (barometarski minimum, depresija) naziva se:", a:["ciklon","anticiklon","izobar","front","hladan front","topli front","okluzija","depresija","ciklonalni sistem","vrtlog","vjetrena oluja","tornadno polje"]},
+{cat:"Geo 1. razred", q:"Koja zvučna pojava nastaje usljed pražnjenja munje?", a:["grom","uragan","oluja","tornado","tuča","pavin glas","jeka","šum","zvuk","udar","eksplozija","tutnjava"]},
+{cat:"Geo 1. razred", q:"Uskovitlani vazdušni stub u obliku lijevka, koji nastaje iz kumulonimbusa, zove se:", a:["tornado","tajfun","uragan","smrkanus","monsun","usjek","ciklon","vjetreni stub","olujni front","anticiklon","pasati","cirkulacija"]},
+{cat:"Geo 1. razred", q:"Kako nazivamo proces direktnog prelaska vodene pare u kristale leda, pri čemu nastaju oblaci?", a:["sublimacija","kondenzacija","evaporacija","precipitacija","kristalizacija","solidifikacija","nukleacija","zamrzavanje","glazura","mrazenje","resublimacija","deponacija"]},
+{cat:"Geo 1. razred", q:"Linije koje povezuju sve tačke sa istom količinom padavina nazivaju se:", a:["izohijete","izoterme","izobare","izohipse","izobate","izogone","izokline","izoanomaale","izodroze","izofite","izohume","izohalini"]},
+{cat:"Geo 1. razred", q:"Koji klimatski tip je karakterističan za južnu i jugoistočnu Aziju, naročito za Indijski potkontinent?", a:["monsunski tip","tropski kišni tip","mediteranski tip","savanski tip","stepski tip","pustinjski tip","suptropski tip","Kv klimatski tip","umjereni maritimni tip","Ef klimatski tip","polupustinjski tip","planinski tip"]},
+{cat:"Geo 1. razred", q:"Koji klimatski tip je karakterističan za oblasti oko polarnika, na sjeveru Sjeverne Amerike i Evroazije, i ostrva oko Antarktika?", a:["subpolarni tip ili klima tundre","polupustinjski tip","mediteranski tip","savanski tip","okeanijalni tip","maritimni kontinentalni tip","tajginski tip","stepoklima","Dv klimatski tip","Es klimatski tip","Cfa klimatski tip","monsunski tip"]},
+{cat:"Geo 1. razred", q:"Kada su padavine zagađene štetnim materijama nazivamo ih:", a:["kiselim kišama","zagađenim oborinama","toksičnim oborinama","radioaktivnom kišom","karbonskom kišom","oksidiranim oborinama","sumpornastim padavinama","industrijskim kišama","alkanim oborinama","nitratnmi padavinama","formaldetidnim kišama","pesticidnim padavinama"]},
+{cat:"Geo 1. razred", q:"Najviše slatke vode nalazi se u:", a:["lednicima","rijekama","jezerima","podzemnim vodama","atmosferi","tlu","barama","mokradama","arktičkom sniegu","antarktičkim ledenjacima","polarnim kapama","tropskim šumama"]},
+{cat:"Geo 1. razred", q:"Desalinizacijom morske vode obezbjeđujemo:", a:["vodu za piće","tehničku vodu","vodu za navodnjavanje","destiliranu vodu","mineralnuu vodu","termicnu vodu","vodu za industriju","slatku vodu za more","vodu sa mineralima","alkalnu vodu","vodu za gasiranje","kondenzovanu vodu"]},
+{cat:"Geo 1. razred", q:"Koliko ukupnih rezervi vode na Zemlji sadrži Svjetsko more?", a:["97%","70%","80%","60%","90%","50%","85%","95%","65%","75%","55%","45%"]},
+{cat:"Geo 1. razred", q:"Koliko okeana ima na Zemlji?", a:["pet","četiri","šest","tri","sedam","osam","dva","devet","jedan","deset","jedanaest","dvanaest"]},
+{cat:"Geo 1. razred", q:"Egejsko i Mramorno more povezuje moreuz:", a:["Dardaneli","Bosfor","Gibraltar","Mesina","Hormuski moreuz","Malajski moreuz","Magelanov moreuz","Bereringov moreuz","Otrantski moreuz","Sikanski moreuz","Korfski moreuz","Sueski kanal"]},
+{cat:"Geo 1. razred", q:"Najslanije more na svijetu, sa salinitetom od 42‰, je:", a:["Crveno more","Kaspijsko more","Mrtvo more","Perzijskii zaliv","Mediteransko more","Crno more","Aralsko more","Baltičko more","Barentsovo more","Arabijsko more","Omanki zaliv","Adenski zaliv"]},
+{cat:"Geo 1. razred", q:"Prva elektrana na svijetu koja koristi energiju morskih talasa izgrađena je u:", a:["Portugalu","Norveški","Danskoj","Škotskoj","Australiji","Japanu","Irskoj","Islandu","Španiji","Kanadi","SAD-u","Novom Zelandu"]},
+{cat:"Geo 1. razred", q:"Koja morska struja rashlađuje zapadne obale Južne Amerike?", a:["Humboldtova struja","Benguelska struja","Golfska struja","Kurošio struja","Labradorska struja","Falklandska struja","Brazilijanska struja","Ekvatorijalna struja","Perujanska struja","Čileanska struja","Antartička struja","Agulhaska struja"]},
+{cat:"Geo 1. razred", q:"Morska struja koja nastaje u Meksičkom zalivu i teče pored istočne obale Sjeverne Amerike prema Evropi naziva se:", a:["Golfska struja","Humboldtova struja","Kurošio","Oyashio","Labradorska struja","Sjeveroatlantska struja","Benguelska struja","Falklandska struja","Azijska struja","Ekvatorijalna struja","Antartička konvergencija","Kanarinska struja"]},
+{cat:"Geo 1. razred", q:"Na rijeci Rans, u zalivu Sen Malo (Francuska), nalazi se elektrana na:", a:["plimu i oseku","vjetar","biomasu","solarnu energiju","geotermalnu energiju","morske talase","naftni gas","nuklearnu energiju","ugalj","vodovod","konvencionalne resurse","hibridni sistem"]},
+{cat:"Geo 1. razred", q:"Voda koja se nalazi u Zemljinoj unutrašnjosti, između dva vodonepropusna sloja, naziva se:", a:["arteška izdan","freatska izdan","karstna voda","podzemna voda","interstiticijalna voda","porična voda","mineralna voda","jamska voda","pukotinska voda","izvorska voda","jezerska voda","kišnica"]},
+{cat:"Geo 1. razred", q:"Evropska zemlja, poznata po gejzirima, je:", a:["Island","Norveška","Finska","Švedska","Danska","Estonija","Letonija","Litvanija","Irska","Škotska","Austrija","Rusija"]},
+{cat:"Geo 1. razred", q:"Najtopliji izvor u Srbiji ima temperaturu od 92°C i nalazi se u:", a:["Vranjskoj banji","Sijarini","Sokobanjia","Bukovičkoj banji","Mataruškoj banji","Lukovskoj banji","Jošanočka banji","Mataruški izvori","Prolom banji","Brestovačkoj banji","Ovčar banji","Rogliati izvorima"]},
+{cat:"Geo 1. razred", q:"Glavna rijeka sa svojim pritokama čini:", a:["riječni sistem","riječni sliv","riječno korito","riječnu mrežu","hidrografsku mrežu","rjsečni bazen","rjecni tok","rječnu dolinu","vodotok","hidrolog sistem","riječni profil","rječnu terasu"]},
+{cat:"Geo 1. razred", q:"Površina sa koje sva voda odtiče u jednu rijeku naziva se:", a:["riječni sliv","riječni sistem","riječno korito","rječna dolina","porječje","hidrografska mreža","vododjelnica","bazien otjecanja","hidrološka zona","vodozbirno područje","catchment area","riječni profil"]},
+{cat:"Geo 1. razred", q:"Najdublje jezero na svijetu je:", a:["Bajkalsko","Kaspijsko","Tanganjika","Superior","Viktorija","Malagaži","Niaasa","Chad","Baikal","Titicaka","Huron","Eire"]},
+{cat:"Geo 1. razred", q:"Jezera čiji je nivo iznad, a dno basena niže od nivoa Svjetskog mora, nazivaju se:", a:["kriptodepresije","tektonska jezera","kraška jezera","vulkanska jezera","ledničkas jezera","estuarijska jezera","morenka jezera","termalana jezera","oksbajna jezera","lgunska jezera","deltna jezera","brana jezera"]},
+{cat:"Geo 1. razred", q:"Najveće tektonsko jezero na Balkanskom poluostrvu je:", a:["Ohridsko","Skadarsko","Prespansko","Dojransko","Bledsko","Bohinsjko","Balaton","Neusiedl","Ohrid","Prespa","Trihanon","Kastoria"]},
+{cat:"Geo 1. razred", q:"Koji lednici nastaju spajanjem više dolinskih lednika?", a:["subpodinski","dolinski","kontinentalni","planinsk","polarski","alpski","fjordski","piedmontski","cirkni","ledni tok","tundrani","ekspediciji"]},
+{cat:"Geo 1. razred", q:"Prosječno, u sastavu zemljišta najveći udio zauzimaju:", a:["mineralne materije","organske materije","voda","vazduh","humus","pijesak","mulj","mikroorganizmi","mikrobiota","azot","kalcij","fosfor"]},
+{cat:"Geo 1. razred", q:"Kako se naziva organski materijal tamne boje koji se formira u tlu od ostataka uginulih biljaka i životinja?", a:["humus","mulj","treset","busen","pijesak","glina","prašina","sediment","kompost","biofilm","detritus","torf"]},
+{cat:"Geo 1. razred", q:"Molisoli su:", a:["stepska zemljišta","šumska zemljišta","pustinjska zemljišta","movirna zemljišta","tropska zemljišta","tundrana zemlja","slatinska zemlja","aluvijalna zemlja","livadska zemlja","planinska zemlja","arktička zemlja","mediteranska zemlja"]},
+{cat:"Geo 1. razred", q:"Prirodna zona koja se javlja u višim geografskim širinama, u uslovima subpolarne klime, naziva se:", a:["tundra","tajga","stepa","savana","desert","maki","garida","monsunska šuma","tropska kišna šuma","subtropska šuma","mangrove","polarni led"]},
+
+// ── GEOGRAFIJA 2. RAZRED ──
+{cat:"Geo 2. razred", q:"Kada se antropogeografija izdvaja iz geografije?", a:["krajem 19. i početkom 20. vijeka","krajem 18. i početkom 19. vijeka","sredinom 20. vijeka","početkom 21. vijeka","sredinom 19. vijeka","krajem 17. i početkom 18. vijeka","početkom 20. vijeka","krajem 20. vijeka","u antičko doba","u renesansi","u baroku","u prosvjetiteljstvo"]},
+{cat:"Geo 2. razred", q:"Najvažniji izvori podataka o stanovništvu svijeta su:", a:["statistički godišnjaci UN","državni popisi","nacionalne baze podataka","izvještaji WHO","podaci Svjetske banke","regionalne studije","ankete nevladinih organizacija","crkvene matice","satelitski snimci","demografske projekcije","OECD izvještaji","istorijski arhivi"]},
+{cat:"Geo 2. razred", q:"Kako se naziva tehnika prikupljanja podataka na terenu, na osnovu unaprijed pripremljenih upitnika i određenog uzorka?", a:["anketa","intervju","posmatranje","popis","etnografija","delphi metoda","analiza sadržaja","eksperiment","studija slučaja","focus group","monitoring","sampling"]},
+{cat:"Geo 2. razred", q:"Planovi generalne i detaljne regulacije, izrađuju se u razmjerama:", a:["od 1:500 do 1:5.000","od 1:10.000 do 1:50.000","od 1:1.000 do 1:10.000","od 1:25.000 do 1:250.000","od 1:100 do 1:1.000","od 1:50.000 do 1:500.000","od 1:1.000.000 do 1:10.000.000","od 1:200 do 1:2.000","od 1:5.000 do 1:50.000","od 1:50 do 1:500","od 1:100.000 do 1:1.000.000","od 1:2.000 do 1:20.000"]},
+{cat:"Geo 2. razred", q:"Koji kontinent ima najveću gustinu naseljenosti?", a:["Azija","Afrika","Evropa","Sjeverna Amerika","Južna Amerika","Australija","Antarktika","Okeanija","Oceanija","Arktik","Euroazija","Pacifika"]},
+{cat:"Geo 2. razred", q:"Koja država ima najveću gustinu naseljenosti u Evropi?", a:["Monako","Malta","San Marino","Holandija","Belgija","Vatikan","Lihtenštajn","Andora","Luksemburg","Island","Kiper","Danska"]},
+{cat:"Geo 2. razred", q:"U kojoj reljefnoj cjelini živi 60% svjetske populacije?", a:["nizijama (do 200 m n.v.)","planinskim predjelima","obalnim područjima","pustinjama","tropskim šumama","tundrama","stepama","mediteranskim oblastima","suptropima","riječnim deltama","jezerskim oblastima","visočijima"]},
+{cat:"Geo 2. razred", q:"Koliko procenata svjetske populacije živi na južnoj Zemljinoj polulopti?", a:["14% svjetske populacije","25% svjetske populacije","30% svjetske populacije","10% svjetske populacije","50% svjetske populacije","40% svjetske populacije","20% svjetske populacije","35% svjetske populacije","5% svjetske populacije","45% svjetske populacije","60% svjetske populacije","55% svjetske populacije"]},
+{cat:"Geo 2. razred", q:"Koja država je najrijeđe naseljena na svijetu?", a:["Mongolija","Rusija","Kanada","Australija","Island","Grenland","Libija","Čad","Mauritanija","Namibija","Bocvana","Kazahstan"]},
+{cat:"Geo 2. razred", q:"U kom vremenskom rasponu traje fertilni period kod žena?", a:["od 15 do 49 godina","od 12 do 45 godina","od 18 do 50 godina","od 15 do 45 godina","od 13 do 49 godina","od 16 do 48 godina","od 14 do 50 godina","od 17 do 47 godina","od 20 do 45 godina","od 15 do 44 godina","od 12 do 50 godina","od 18 do 45 godina"]},
+{cat:"Geo 2. razred", q:"Koji demografski pokazatelj predstavlja učestalost umiranja u jednoj populaciji?", a:["mortalitet","natalitet","fertilitet","migracija","natural increment","demografski rast","stopa rasta","životni vijek","smrtnost odojčadi","perinatalni mortalitet","stopa preživljavanja","demografska tranzicija"]},
+{cat:"Geo 2. razred", q:"U kojoj afričkoj državi je najkraći prosječni životni vijek stanovništva?", a:["Centralnoafričkoj Republici","Čadu","Nigeru","Maliju","Somaliji","Sierra Leoneu","Gvineji-Bisau","Liberiji","Burkini Faso","Mozambiku","Zimbabveu","Lesotu"]},
+{cat:"Geo 2. razred", q:"Koji kontinent bilježi najvišu prosječnu stopu prirodnog priraštaja?", a:["Afrika","Azija","Latinska Amerika","Okeanija","Srednja Amerika","Karibe","Bliski Istok","Sjeverna Amerika","Južna Amerika","Centralna Azija","Evropa","Australija"]},
+{cat:"Geo 2. razred", q:"Koliko faza ima demografska tranzicija?", a:["četiri faze","tri faze","pet faza","dvije faze","šest faza","sedam faza","osam faza","devet faza","deset faza","jednu fazu","jedanaest faza","dvanaest faza"]},
+{cat:"Geo 2. razred", q:"U koje uzroke migracija spadaju ratni sukobi, totalitarni politički režimi, vjerska netrpeljivost i prirodne nepogode?", a:["neekonomske uzroke","ekonomske uzroke","političke uzroke","ekološke uzroke","kulturne uzroke","demografske uzroke","zdravstvene uzroke","tehnološke uzroke","klimatske uzroke","historijski uzroci","socijalnih uzroci","geografski uzroci"]},
+{cat:"Geo 2. razred", q:"Koliko procenata svjetskog stanovništva pripada negroidnoj (crnoj) rasi?", a:["12%","8%","15%","20%","10%","25%","5%","30%","18%","6%","22%","3%"]},
+{cat:"Geo 2. razred", q:"Kojoj ljudskoj rasi pripradaju Eskimi?", a:["mongolidnoj rasi","kaukasoidnoj rasi","negroidnoj rasi","australoidnoj rasi","kapoidnoj rasi","mediteranskoj rasi","nordijskloj rasi","mongoloidnoj rasi","eurooidnoj rasi","patagonskoij rasi","amazonijuskoj rasi","mikronezijskoij rasi"]},
+{cat:"Geo 2. razred", q:"Mješanjem bijele i žute ljudske rase nastaju:", a:["mestici","mulati","zambi","kreoli","metiši","mulatstki unoci","polu-azijci","evroazijci","hibridni","mješanci","kršteni","birasni"]},
+{cat:"Geo 2. razred", q:"Koliki je udio muslimana u svjetskoj populaciji?", a:["23%","15%","30%","10%","20%","35%","5%","40%","18%","25%","12%","28%"]},
+{cat:"Geo 2. razred", q:"Stara japanska religija je:", a:["šintoizam","budizam","konfucijanizam","taoizam","animizam","šamanizam","hinduizam","dzoduizam","sinhtoizam","kamuism","kamon","ritualism"]},
+{cat:"Geo 2. razred", q:"U koju kategoriju stanovništva spadaju penzioneri, vojni invalidi i stipendisti?", a:["neaktivno stanovništvo ili osobe sa ličnim primanjima","aktivno stanovništvo","zaposleni","nezaposleni","sekundarni sektor","privredno aktivni","tercijalni sektor","kvartarni sektor","marginalizovano stanovništvo","ekonomski zavisni","radno sposobni","socialnio ugroženi"]},
+{cat:"Geo 2. razred", q:"U kojemu privrednom sektoru rade stanovnici nerazvijenih zemalja?", a:["u primarnom sektoru","u sekundarnom sektoru","u tercijarnom sektoru","u kvartarnom sektoru","u kvintarnom sektoru","u informacionom sektoru","u visokotech sektoru","u javnom sektoru","u privatnom sektoru","u neformalnom sektoru","u sektorima usluga","u turizmu"]},
+{cat:"Geo 2. razred", q:"Koja jedina država u svijetu ima stopu pismenosti od 100%?", a:["Sjeverna Koreja","Norveška","Finska","Danska","Islanid","Japan","Singapur","Južna Koreja","Lihtenštajn","Andora","Kuba","Monako"]},
+{cat:"Geo 2. razred", q:"Koja civilizacija je prva odvojila naučno mišljenje od religije?", a:["Grčka","Egipatska","Mesopotamska","Kineska","Indijska","Rimska","Persijska","Feničanska","Akadska","Sumerjska","Minojska","Hetitska"]},
+{cat:"Geo 2. razred", q:"Koji je najstariji zapisani ep na svijetu?", a:["Ep o Gilgamešu","Ilijada","Odiseja","Mahabharata","Ramajana","Beovulf","Enej da","Edda","Kalevala","Epos o Etani","Epovi Ugarita","Manas"]},
+{cat:"Geo 2. razred", q:"Ko je razvio prvo fonetsko-glasovno pismo?", a:["Feničani","Sumerani","Egipćani","Grci","Rimljani","Kinezi","Jevreji","Arapi","Persijci","Hetiti","Asirci","Babilonci"]},
+{cat:"Geo 2. razred", q:"Koje dvije evropske države imaju najveći indeks humanog razvoja na svijetu?", a:["Norveška i Švajcarska","Danska i Finska","Holandija i Belgija","Švajcarska i Austirija","Norveška i Šved ska","Njemačka i Danska","Lihtenštajn i Island","Norveška i Island","Luksemburg i Andora","Finska i Estonija","Monako i Andora","Britanija i Irska"]},
+{cat:"Geo 2. razred", q:"Kojemu hronostratigrafskom periodu u razvoju ljudske civilizacije pripada Vinčanska kultura?", a:["neolitu","paleolitu","meolitu","bronzanom dobu","željeznom dobu","kalkolitu","antici","protoistoriji","eneolitu","dobu bakra","kasnom mezolitu","kasnom paleolitu"]},
+{cat:"Geo 2. razred", q:"Kojoj civilizacji su pripadali najstariji gradovi svijeta (Ur, Uruk, Nipur)?", a:["Sumerskoj","Akadskoj","Babilonskoj","Asirskoj","Egipatskoj","Elamitskoj","Hurtoskoj","Mitanijskoj","Kasitskoj","Feničanskoj","Minojskoj","Hetitskoj"]},
+{cat:"Geo 2. razred", q:"Koji kralj je Memfis proglasio prestonicom Egipta?", a:["Menes","Ramzes","Tutankamon","Amenhotep","Sneferu","Keopas","Hufu","Hafra","Menkaura","Totmos","Akhenaton","Nefertiti"]},
+{cat:"Geo 2. razred", q:"Kako su se zvali grčki politički i ekonomski samostalni gradovi-države?", a:["polisi","metropole","kolonije","agore","akropole","demos","sinojkizmi","monarh ije","oligarhije","tirani je","pentarh ije","strateg ije"]},
+{cat:"Geo 2. razred", q:"Kojoj rimskoj provinciji je pripadao najveći dio Srbije?", a:["Gornjoj Meziji","Donjoj Meziji","Panoniji","Dakiji","Trakiji","Iliriku","Makedoniji","Epiru","Ahaji","Retiji","Germaniji","Galiji"]},
+{cat:"Geo 2. razred", q:"Koji grad na svijetu je najveći po broju stanovnika?", a:["Tokio","Delhi","Šangaj","Mumbaj","São Paulo","Peking","Ciudad de Mexico","Kairo","Dhaka","Osaka","Karachi","Lagos"]},
+{cat:"Geo 2. razred", q:"Koji kontinent ima najveći stepen urbanizacije?", a:["Južna Amerika","Sjeverna Amerika","Evropa","Australija","Azija","Okeanija","Afrika","Srednja Amerika","Karibe","Antarktika","Arktik","Oceanija"]},
+{cat:"Geo 2. razred", q:"Koja afrička država ima najmanji procenat gradskog stanovništva?", a:["Burundi","Niger","Malavi","Etiopija","Uganda","Ruanda","Tanzanija","Mozambik","Madagaskar","Gvineja","Mali","Čad"]},
+{cat:"Geo 2. razred", q:"Kako se naziva prostrano visokourbanizovano područje na teritoriji jedne ili više država, nastalo srastanjem nekoliko konurbacija?", a:["megalopolis","metropola","konurbacija","aglomeracija","megagrad","urbana regija","megaurbana zona","polycentric city","urban sprawl","grad-region","makrourbano područje","megaurbanizacija"]},
+{cat:"Geo 2. razred", q:"Kako se naziva proces preseljenja stanovništva iz urbanih u ruralna područja?", a:["deurbanizacija","urbanizacija","suburbanizacija","reurbanizacija","kontraurbanizacija","desurbanizacija","seoska urbanizacija","ruralizacija","antourbanizacija","migracija prema periferiji","depopulacija gradova","ruralni egzodus"]},
+{cat:"Geo 2. razred", q:"Kako se naziva urbani sistem u kome jedan grad dominira veličinom i funkcijama (primjer Beograda u Srbiji)?", a:["monocentrični urbani sistem","policentrični urbani sistem","decentralizovani urbani sistem","federalni urbani sistem","disperzovani urbani sistem","bicentrični urbani sistem","hijerarhijski urbani sistem","sekundarni urbani sistem","primas urbani sistem","mrežni urbani sistem","urbana piramida","regionalni urbani centar"]},
+{cat:"Geo 2. razred", q:"Proces pseudourbanizacije prati stvaranje ogromnih sirotinjskih četvrti koje se nazivaju:", a:["slamovi","favele","barriadas","bastardi","shanti-towns","kibere","townships","katakombe","kolibe","mahale","periferije","nezakonite gradnje"]},
+{cat:"Geo 2. razred", q:"U kojoj državi Južne Amerike postoje sirotinjske četvrti pod nazivom bariadasi?", a:["u Peruu","u Brazilu","u Kolumbiji","u Čileu","u Venecueli","u Boliviji","u Ekvadoru","u Argentini","u Urugvaju","u Paragvaju","u Gvatemali","u Hondurasu"]},
+{cat:"Geo 2. razred", q:"Koja industrijska revolucija je počela pronalaskom naizmjenične struje, električne sijice, motora sa unutrašnjim sagorijevanjem, eksploatacijom nafte?", a:["Druga","Prva","Treća","Četvrta","Peta","Šesta","Nulta","Sedma","Osma","Deveta","Deseta","Jedanaesta"]},
+{cat:"Geo 2. razred", q:"Na kojoj kineskoj rijeci je izgrađena najveća hidroelektrana na svijetu?", a:["Jangtsekinag","Huang He","Mekong","Amur","Jangce","Juanhe","Ejhu","Xi","Sunhari","Zhujiang","Yihe","Weihe"]},
+{cat:"Geo 2. razred", q:"U kom gradu je 1800. godine formiran prvi industrijski park?", a:["Mančesteru","Birmingemu","Liverpoolu","Lidzu","Londonu","Glestogu","Šefildu","Notingemu","Bostonu","Njujorku","Čikagu","Filadelfiji"]},
+{cat:"Geo 2. razred", q:"Koja evropska država ima najveće učešće korisnika interneta u ukupnom stanovništvu (2017. godina - 98,9%)?", a:["Andora","Island","Norveška","Danska","Lihtenštajn","Monako","Luksemburg","Švajcarska","Finska","Holandija","Estonija","Danska"]},
+{cat:"Geo 2. razred", q:"Koje godine je osnovana Organizacija za ekonomsku saradnju i razvoj — OECD?", a:["1960. godine","1945. godine","1950. godine","1965. godine","1970. godine","1948. godine","1955. godine","1975. godine","1980. godine","1985. godine","1990. godine","1995. godine"]},
+{cat:"Geo 2. razred", q:"U kom gradu je 1989. godine osnovana međunarodna ekonomska organizacija Azijsko-pacifički ekonomski forum — APEK?", a:["Singapuru","Tokiju","Sydneyu","Seulu","Pekingu","Džakarti","Kuala Lumpuru","Melbournu","Banjozu","Deliju","Bangkoku","Manili"]},
+{cat:"Geo 2. razred", q:"Koja država je najmlađa članica Evropske unije, primljena 2013. godine?", a:["Republika Hrvatska","Bugarska","Rumunija","Slovenija","Slovačka","Mađarska","Estonija","Latvija","Litvanija","Kipar","Malta","Češka"]},
+{cat:"Geo 2. razred", q:"Koja evropska prestonica se naziva najzelenijom jer je oko 50% njene teritorije pod zelenim površinama (20% pod šumom)?", a:["Beč","Stokholm","Helsinki","Oslo","Berlin","Brisel","Amsterdam","Kopenhagen","Lublana","Prag","Bratislava","Riga"]},
+{cat:"Geo 2. razred", q:"U kojemu dokumentu su definisani osnovni principi održivosti (Drugi svjetski ekološki samit — Rio de Žaneiro, 1992. godina)?", a:["Agendi 21","Kjoto protokolu","Pariskom sporazumu","Deklaraciji iz Ria","Bergenskoj izjavi","Brundtland izvještaju","Deklaraciji iz Johanesburga","Bazelnoj konvenciji","Protokolu o bioraznolikosti","Protokol o ozonskom omotaču","Aichi ciljevima","Sendai okviru"]},
+{cat:"Geo 2. razred", q:"Koje godine je Vatikan, sporazumom sa Italijom, dobio teritoriju i postao subjekt u međunarodnom javnom pravu?", a:["1929. godine","1905. godine","1871. godine","1945. godine","1918. godine","1945. godine","1914. godine","1950. godine","1870. godine","1960. godine","1917. godine","1900. godine"]},
+{cat:"Geo 2. razred", q:"Kako nazivamo države koje priznaju vlast nad sobom od strane neke druge države?", a:["vazalne","federalne","unitarne","konfederalne","autonomne","protektorati","zavisne teritorije","kolonije","mandatne teritorije","pridružene države","kodominium","savezne države"]},
+{cat:"Geo 2. razred", q:"Koliko glavnih gradova ima Južnoafrička Republika?", a:["tri","jedan","dva","četiri","pet","šest","sedam","osam","devet","deset","jedanaest","dvanaest"]},
+{cat:"Geo 2. razred", q:"Koliko država u Africi su kraljevine?", a:["tri","jedna","dvije","četiri","pet","šest","sedam","osam","devet","deset","jedanaest","dvanaest"]},
+{cat:"Geo 2. razred", q:"Kako nazivamo države koje u pravnom smislu predstavljaju nedjeljivu cjelinu i imaju centralizovane organe vlasti?", a:["unitarne","federalne","konfederalne","autonomne","decentralizovane","složene","parlamentarne","predsjedničke","monarhiske","teokratske","vojni režimi","oligarhije"]},
+{cat:"Geo 2. razred", q:"Kako nazivamo političku doktrinu po kojoj članovi pokreta nastoje da povrate teritoriju koju smatraju svojom u kulturnom, etničkom i religijskom smislu?", a:["iredentizam","separatizam","nacionalizam","federalizam","autonomizam","revizionizam","kosmopolitizam","monarizam","izolacionizam","ekspanzionizam","militarizam","hegemonizam"]},
+{cat:"Geo 2. razred", q:"U kom vijeku i gdje se odvila prva faza dekolonizacije?", a:["u 18. vijeku u Sjevernoj Americi","u 17. vijeku u Africi","u 19. vijeku u Latinskoj Americi","u 20. vijeku u Aziji","u 16. vijeku u Australiji","u 15. vijeku u Evropi","u 19. vijeku u Africi","u 18. vijeku u Aziji","u 20. vijeku u Okeaniji","u 17. vijeku u Sjevernoj Americi","u 16. vijeku u Americi","u 18. vijeku u Latinskoj Americi"]},
+{cat:"Geo 2. razred", q:"Koja faza dekolonizacije traje između dva Svjetska rata?", a:["treća faza","prva faza","druga faza","četvrta faza","peta faza","šesta faza","sedma faza","osma faza","deveta faza","deseta faza","jedanaesta faza","dvanaesta faza"]},
+{cat:"Geo 2. razred", q:"Koje godine je srušen Berlinski zid?", a:["1989. godine","1990. godine","1991. godine","1988. godine","1987. godine","1985. godine","1992. godine","1993. godine","1994. godine","1986. godine","1984. godine","1983. godine"]},
+{cat:"Geo 2. razred", q:"Koliko je nezavisnih država nastalo raspadopm SSSR-a 1991. godine?", a:["petnaest","dvanaest","četrnaest","šesnaest","deset","trinaest","jedanaest","osamnaest","devetnaest","dvadeset","dvadeset jedan","deset"]},
+{cat:"Geo 2. razred", q:"Koje dvije države su nastale 'Plišanom revolucijom'?", a:["Češka i Slovačka","Slovenija i Hrvatska","Srbija i Crna Gora","Mađarska i Rumunija","Estonija i Letonija","Litvanija i Belorusija","Kazahstan i Uzbekistan","Gruzija i Jermenija","Azerbejdžan i Moldavija","Polska i Čehija","Ukrajna i Rusija","Bugarska i Rumunija"]},
+{cat:"Geo 2. razred", q:"Jedine nezavisne afričke države krajem 19. vijeka su:", a:["Liberija i Etiopija","Egipat i Maroko","Alžir i Tunis","Sudan i Libija","Somalija i Džibuti","Kenija i Uganda","Tanzanija i Mozambik","Angola i Kongo","Gana i Niger","Senegal i Mali","Kamerun i Čad","Eritreja i Džibuti"]},
+{cat:"Geo 2. razred", q:"Pod čijom kolonijalnom vlašću je bio Senegal?", a:["Francuske","Britanije","Portugala","Španije","Belgije","Holandije","Italije","Njemačke","Danake","Švedske","Rusije","SAD-a"]},
+{cat:"Geo 2. razred", q:"Koja afrička država je najmlađa (stekla nezavisnost 2011. godine)?", a:["Južni Sudan","Eritreja","Namibija","Zimbabve","Mozambik","Angola","Džibuti","Komori","Sao Tome","Zelenortska Ostrva","Gvineja Bisao","Monako"]},
+{cat:"Geo 2. razred", q:"Koja država Južne Amerike stiče nezavisnost 1975. godine, a bila je jedina holandska kolonija na ovom kontinentu?", a:["Surinam","Gvajana","Gujana","Belize","Trinidad i Tobago","Barbados","Jamajka","Bahami","Hait i","Kuba","Dominikanska Republika","Portoriko"]},
+{cat:"Geo 2. razred", q:"U kojoj državi se nalazi rt Roka, najzapadnija tačka kontinentalnog dijela Evrope?", a:["Portugalu","Španiji","Irskoj","Britaniji","Francuskoj","Belgiji","Holandiji","Danaska","Norveški","Islandu","Italiji","Grčkoj"]},
+{cat:"Geo 2. razred", q:"Na kojoj planini se nalazi najviši vrh Evrope, Elbrus?", a:["na Kavkazu","na Alpima","na Pirinejima","na Karpatima","na Skandinavskim planinama","na Apeninima","na Balkanskim planinama","na Dinari","na Uralju","na Tjenšanu","na Altaju","na Pamiru"]},
+{cat:"Geo 2. razred", q:"Koliko procenata teritorije zauzimaju nizije u Evropi?", a:["60% teritorije","40% teritorije","50% teritorije","70% teritorije","30% teritorije","80% teritorije","25% teritorije","75% teritorije","20% teritorije","90% teritorije","15% teritorije","55% teritorije"]},
+{cat:"Geo 2. razred", q:"Koja dva jezera su najveća u Evropi?", a:["Ladoga i Onjega","Balaton i Genevo","Venern i Veter","Saimaa i Inari","Peipus i Ilmen","Como i Garda","Maggiore i Lugano","Loch Ness i Loch Lomond","Vättern i Mälaren","Oulu i Pijhäne","Plesće i Kostroma","Seliger i Belo"]},
+{cat:"Geo 2. razred", q:"U Evropi su tri države po uređenju kneževine. To su: Monako, Lihtenštajn i:", a:["Andora","San Marino","Vatikan","Luksemburg","Malte","Lihtenštajn","Kiper","Kneževina Albanija","Knjažev ina Crna Gora","Monaška kneževina","Knjažev ina Srbija","Kneževina Sardinija"]},
+{cat:"Geo 2. razred", q:"Kojoj grupi Slovena pripradaju Lužički Srbi?", a:["Zapadnim Slovenima","Južnim Slovenima","Istočnim Slovenima","Panosnkim Slovenima","Karpatskim Slovenima","Baltičkim Slovenima","Alpskim Slovenima","Moravskim Slovenima","Slovenskim Slovenima","Donjim Slovenima","Gornjim Slovenima","Sjevernim Slovenima"]},
+{cat:"Geo 2. razred", q:"Kojoj grupi naroda pripradaju Katalonci?", a:["Romanima","Germanima","Slovenima","Keltima","Berberima","Baskcima","Arapima","Ibercima","Latinima","Visigotima","Vandalima","Sardinjanima"]},
+{cat:"Geo 2. razred", q:"Koja evropska zemlja ima najveći broj turista?", a:["Francuska","Španija","Italija","Grčka","Turska","Holandija","Britanija","Njemacka","Austrija","Švajcarska","Portugal","Mađarska"]},
+{cat:"Geo 2. razred", q:"Gdje se nalazi najviši vrh Španije?", a:["na ostrvu Tenerife","na Pirinejima","u Kataloniji","u Aragonu","na Balearskim ostrvima","na Kanarskim ostrvima (Gran Kanarija)","u Andaluziji","u Kastilji","na Majorki","na Ibici","u Galiciji","u Kastilji la Manča"]},
+{cat:"Geo 2. razred", q:"Koji grad je centar Ligurijske rivijere u Italiji?", a:["Đenova","Milano","Firenca","Torino","Rim","Napulj","Venecija","Bolonja","Palermo","Bari","Salerno","Katanija"]},
+{cat:"Geo 2. razred", q:"Koja čuvena venecijanska crkva je opjevana u pjesmi Laze Kostića?", a:["Santa Marija dela Salute","Santa Marija Formosa","San Žorđo Mađore","San Pollo","Santa Marija Glorijoza dei Frari","Santi Đovani e Paolo","San Pietro di Kastelo","Santa Marija del Rozario","San Nikola da Tolentino","Santa Marija Mater Domini","San Zanipolom","San Salvador"]},
+{cat:"Geo 2. razred", q:"Koji italijanski grad je sjedište regije Toskana?", a:["Firenca","Rim","Sijene","Piza","Lucca","Arezzo","Prato","Livorno","Grosverto","Pistoja","Massa","Forte dei Marmi"]},
+{cat:"Geo 2. razred", q:"Kako se naziva manastirski kompleks na teško pristupačnim stenama u Grčkoj regiji Zapadna Tesalija?", a:["Meteori","Athos","Patmos","Olympos","Delfi","Knossos","Epidaur","Olimpija","Mikonos","Santorini","Paros","Naxos"]},
+{cat:"Geo 2. razred", q:"Kojemu arhipelagu pripapadaju ostrva Mikonos, Santorini, Paros i Naksos?", a:["Kikladie","Dodekaned","Jonskim ostrvima","Sporadima","Egejskim ostrvima","Kretom","Samos ostrvima","Heladskim ostrvima","Egejskim grijecima","Pelop onezom","Atičkim ostrvima","Tirskim ostrvima"]},
+{cat:"Geo 2. razred", q:"Koja planina je najviša na Balkanskom poluostrvu?", a:["Rila","Pirin","Vitoša","Rodopi","Balkan (Stara Planina)","Olimp","Pindus","Šar planina","Pelister","Korab","Dinara","Prokletije"]},
+{cat:"Geo 2. razred", q:"U kojoj državi se nalazi konurbacija Flamanski dijamant?", a:["Belgiji","Holandiji","Luksemburgu","Njemačkoj","Francuskoj","Danaskoij","Irskoj","Britaniji","Švicariji","Austriji","Italiji","Španiji"]},
+{cat:"Geo 2. razred", q:"Na kojoj rijeci se nalazi najveća hidroelektrana u Evropi?", a:["Volgi","Dnjepru","Dunavu","Rajni","Seni","Lori","Soni","Loari","Elbi","Visli","Odri","Oderu"]},
+{cat:"Geo 2. razred", q:"Koja dva ruska grada povezuje Transsibirska željeznica?", a:["Moskvu i Vladivostok","Moskvu i Sankt Peterburg","Sankt Peterburg i Vladivostok","Moskvu i Habarovsk","Novosibirsk i Vladivostok","Jekaterinburg i Vladivostok","Moskvu i Irkutsk","Čelabinsk i Vladivostok","Moskvu i Irkutsk","Volgograd i Vladivostok","Moskvu i Čitu","Perm i Vladivostok"]},
+{cat:"Geo 2. razred", q:"Koja evropska država je najveći proizvođač i izvoznik suncokretovog ulja na svijetu?", a:["Ukrajina","Rusija","Mađarska","Rumunija","Bugarska","Francuska","Španija","Italija","Srbija","Argentina","Turska","Moldavija"]},
+{cat:"Geo 2. razred", q:"Koji kontinent ima najveću srednju nadmorsku visinu od 950 m?", a:["Azija","Antarktika","Južna Amerika","Afrika","Sjeverna Amerika","Australija","Evropa","Okeanija","Arktik","Euroazija","Pacifika","Island"]},
+{cat:"Geo 2. razred", q:"Koliko sultanata ima u Aziji?", a:["dva","jedan","tri","četiri","pet","šest","sedam","osam","nula","devet","deset","jedanaest"]},
+{cat:"Geo 2. razred", q:"Koliki procenat ukupnog svjetskog stanovništva živi u Aziji?", a:["60%","50%","70%","45%","55%","65%","40%","75%","35%","80%","30%","85%"]},
+{cat:"Geo 2. razred", q:"Šta je najznačajnije prirodno bogatstvo jugozapadne Azije?", a:["nafta i prirodni gas","zlato i dijamanti","ugalj i čelik","rude bakra i cinka","platina i paladijum","drvo i papir","suncokret i soja","riblji resursi","turizam i kultura","voda i navodnjavanje","rudnici srebra","mineralana voda"]},
+{cat:"Geo 2. razred", q:"Kojoj azijskoj civilizaciji pripadaju drevni epovi 'Mahabharata' i 'Ramajana'?", a:["Indijskoj","Kineskoj","Persijskoj","Mesopotamskoj","Japanksoj","Tibatnaskoij","Mongolskoj","Khmernaskoij","Austronezijskoij","Dravidanskij","Sumersjkoij","Akemdajnskoij"]},
+{cat:"Geo 2. razred", q:"Kako se naziva najkišovitija oblast na svijetu, gdje godišnja količina padavina prelazi 11.000 mm?", a:["Asam","Čerapundži","Mawsirnam","Tutunendo","Sierra Leone","Quibdó","Hilo","Debundsha","Padang","Manuae","Cropp","Henderson"]},
+{cat:"Geo 2. razred", q:"Koja azijska država ima najduži kontinuitet u trajanju njene monarhije?", a:["Japan","Tajland","Saudijska Arabija","Kambodža","Brunej","Butan","Kuvajt","Jordan","Kina","Mongolija","Vijetnam","Koreja"]},
+{cat:"Geo 2. razred", q:"Kako se nazivaju slana jezera karakteristična za sjeverni dio Sahare?", a:["šotovi","chotts","salinas","sebka","plaje","evaporitna jezera","slatinska jezera","kloridrna jezera","salinska korita","šalkalna jezera","saharnoijezera","mineralna jezera"]},
+{cat:"Geo 2. razred", q:"Ko, pored Pigmeja i Hotentota, čini najstarije stanovništvo Afrike?", a:["Bušmani","Tuarezi","Berberi","Nuer","Zulu","Masai","Fulani","Joruba","Hauza","Igbo","San","Ndebele"]},
+{cat:"Geo 2. razred", q:"Kako se naziva nomadski narod koji živi u alžirskom dijelu Sahare?", a:["Tuarezi","Berberi","Bušmani","Teda","Arapi","Fulani","Toubou","Nuer","Somali","Hausa","Kanuri","Zaghawa"]},
+{cat:"Geo 2. razred", q:"Koja bolest u Subsaharskoj Africi usmrti pola miliona stanovnika godišnje?", a:["malarija","HIV/AIDS","tuberkuloza","kolera","ebola","tifus","meningitis","žuta groznica","dijareja","pneumonija","ospice","tetanus"]},
+{cat:"Geo 2. razred", q:"Koja rijeka je najveća lijeva pritoka Mississippija?", a:["Ohajo sa Tenesijem","Missouri","Arkansas","Red River","Illinois","Tennessee","Cumberland","White River","Big Black","Yazoo","Atchafalaya","Pearl"]},
+{cat:"Geo 2. razred", q:"Koje poluostrvo Srednje Amerike su nastanjivale Maje?", a:["Jukatan","Florida","Baja Kalifornija","Labrador","Nikaragva","Honduras","Gvatemala","Belize","Meksiko","Čijapas","Kvintan Roo","Tabasco"]},
+{cat:"Geo 2. razred", q:"Ispod kojeg aktivnog vulkana se razvio glavni grad Ekvadora Kito?", a:["Kotopaksi","Čimboraso","Kangahua","Pichincha","Antisana","Cayambe","Tunguragua","Altar","Sangay","Sumaco","Puñalica","Chiles"]},
+{cat:"Geo 2. razred", q:"Koje visoravni čine geološki najstariji dio južnoameričkog kontinenta?", a:["Gvajanska i Brazilska visocart","Patagonska i Andinska visoravan","Orinoko i Amazonska nizija","Pampaska i Lavradijska visoravan","Granitna i Sedimentna visoravan","Argentinska i Čileanska visoravan","Paragvajska i Urugvajska nizija","Andinsko i Andijsko uzvišenje","Maputska i Carioca visoravan","Kavajana i Gvitanska visoravan","Kolomibska i Venecuelanska visoravan","Peruanska i Bolivijska visoravan"]},
+{cat:"Geo 2. razred", q:"Koliki procenat svjetskih rezervi slatke vode se nalazi u Južnoj Americi?", a:["31%","20%","25%","15%","40%","10%","35%","45%","50%","5%","12%","28%"]},
+{cat:"Geo 2. razred", q:"Kom geografskom regionu pripada Polinezija?", a:["Okeaniji","Aziji","Australiji","Melaneziji","Mikroneziji","Pacifiku","Indijskom oceanu","Australaziji","Antarktiku","Arktiku","Madagaskaru","Karibima"]},
+
+// ── GEOGRAFIJA 3. RAZRED ──
+{cat:"Geo 3. razred", q:"Koji njemački geograf je 1808. godine prvi upotrijebio naziv Balkansko poluostrvo?", a:["Johan August Cojne","Karl Riter","August Peterman","Franz von Zach","Adolf Stieler","Karl Spruner","Heinrich Kiepert","Friedrich Ratzel","Oskar Peschel","Ernst Kapp","Friedrich Gerhard","Carl Andree"]},
+{cat:"Geo 3. razred", q:"Koliko je dugačka obala Balkanskog poluostrva?", a:["9.300 km","7.000 km","8.500 km","6.200 km","10.000 km","11.500 km","5.800 km","4.200 km","12.000 km","13.500 km","3.900 km","15.000 km"]},
+{cat:"Geo 3. razred", q:"Koji vodeni saobraćajni koridor vodi preko Balkanskog poluostrva?", a:["Dunavski koridor (Koridor 7)","Mediteranski koridor","Podunavski koridor","Jadransko-jonski koridor","Sjevernoevropski koridor","Baltičko-jadranski koridor","Rajnski koridor","Crnogorski koridor","Balkanski koridor","Turski koridor","Bospor koridor","Dardanelski koridor"]},
+{cat:"Geo 3. razred", q:"Koliko hidroelektrana postoji na Dunavu?", a:["14","10","12","8","16","18","20","6","22","24","4","26"]},
+{cat:"Geo 3. razred", q:"Najnižu tačku Srbije od 28 m nadmorske visine predstavlja ušće koje rijeke u Dunav?", a:["Timoka","Save","Tise","Drine","Morave","Tamiša","Nišave","Ibra","Đetinje","Uvca","Peka","Mlave"]},
+{cat:"Geo 3. razred", q:"Koliko procenata teritorije Srbije pripada slivu Crnog mora?", a:["93%","80%","75%","85%","70%","95%","60%","65%","90%","50%","55%","45%"]},
+{cat:"Geo 3. razred", q:"Prema kojoj susjednoj državi Srbija ima najdužu granicu?", a:["Rumuniji","Bugarakoij","Mađarskoij","Bosni i Hercegovini","Albaniji","Makedoniji","Crnoj Gori","Kosovu","Grčkoij","Turkskoij","Austriji","Sloveniji"]},
+{cat:"Geo 3. razred", q:"Prema kojim susjednim državama Srbija ima po devet drumskih graničnih prelaza?", a:["Mađarksoj i Rumuniji","Bugarksoj i Sjevernoj Makedoniji","Mađarksoj i Bugarksoj","Rumuniji i Bosni i Herc.","Crnoj Gori i Albaniji","Sjevernoj Makedoniji i Albaniji","Rumuniji i Mađarksoj","Bosni i Herc. i Crnoj Gori","Mađarksoj i Sjevernoj Makedoniji","Bugarksoj i Crnoj Gori","Rumuniji i Albaniji","Bosni i Herc. i Mađarksoj"]},
+{cat:"Geo 3. razred", q:"Strezimovci su granični prelaz između Srbije i:", a:["Bugarske","Sjeverne Makedonije","Rumunoje","Mađarksoje","Bosne i Herceg.","Crne Gore","Albanije","Kosova","Hrvatske","Slovenija","Austrije","Grke"]},
+{cat:"Geo 3. razred", q:"Koja rijeka čini prirodnu granicu između Srbije i Crne Gore?", a:["Lim","Drina","Tara","Ibar","Piva","Ćehotina","Morača","Zeta","Bistrica","Ljenica","Uvac","Mileš ka"]},
+{cat:"Geo 3. razred", q:"Kolika je prosječna nadmorska visina teritorije Srbije?", a:["473 m","350 m","420 m","500 m","600 m","320 m","280 m","550 m","380 m","450 m","250 m","650 m"]},
+{cat:"Geo 3. razred", q:"Koliko procenata teritorije Srbije zahvataju nizije?", a:["36,7%","25%","30%","40%","45%","20%","50%","35%","55%","15%","60%","10%"]},
+{cat:"Geo 3. razred", q:"Koja masa predstavlja najstarije kopno u Srbiji?", a:["Srpsko-makedonska masa","Panonski bazen","Vardar zona","Dinarska masa","Karpato-balkanski luk","Moravska zona","Šumadijska masa","Fruškogorska masa","Vlasinska masa","Bačka masa","Banatska masa","Sremska masa"]},
+{cat:"Geo 3. razred", q:"Od kojih sedimenata je izgrađen najveći dio Vojvođanskog reljefa?", a:["eolskih sedimenata","fluvijalnih sedimenata","jezerskih sedimenata","marinskih sedimenata","glacijalnih sedimenata","deluvijalnih sedimenata","proluvijalnih sedimenata","koluvijalnih sedimenata","subakvalnih sedimenata","deltnih sedimenata","bajovskih sedimenata","paludarnih sedimenata"]},
+{cat:"Geo 3. razred", q:"Na kojoj planini se nalazi najviši vrh Vojvodine — 641 m nadmorske visine?", a:["Vršačkim planinama","Fruškoj gori","Majevici","Ceru","Avali","Kosmaju","Rudniku","Bukuviku","Gornjačkoj gori","Jelici","Kucaju","Ozrenu"]},
+{cat:"Geo 3. razred", q:"Gdje se nalazi najviša tačka Bačke?", a:["na Subotičkoj pješćari","na Titelskom bregu","na Fruškoj gori","u Bačkoj palanci","u Somboru","u Novom Sadu","u Kikindi","u Subotici","u Sivcu","na Bajmočkim bregovima","u Odžacima","u Baču"]},
+{cat:"Geo 3. razred", q:"Kojemu bloku pripadaju planine Gučevo, Boranja, Jagodnja i Sokol?", a:["Jadranskom","Zlatiborskom","Šumadijskonm","Kopaoničko","Rađevačkom","Posavsko-Tamnav skom","Podrinjskom","Mačvanskom","Sremskom","Kolubarskom","Leskovačkom","Timočkom"]},
+{cat:"Geo 3. razred", q:"Kojoj grupi planina pripadaju Paštrik i Korilnik?", a:["Šarskim planinama","Prokletijama","Kopaoniku","Stari planini","Rtnju","Zlatiboru","Tari","Homolju","Rudniku","Goču","Jelici","Vlasini"]},
+{cat:"Geo 3. razred", q:"Koja planina je najviša i najprostranija u Karpatsko-balkanskom planinskom luku?", a:["Stara planina","Miroč","Deli Jovan","Beljanic","Rtanj","Kučaj","Ozren","Tupa","Devica","Babička gora","Suva planina","Vidič"]},
+{cat:"Geo 3. razred", q:"Koja pećina je najduža u Srbiji?", a:["Lazareva pećina","Stopića pećina","Resavska pećina","Rajkova pećina","Potpećka pećina","Vlasinska pećina","Cerjanska pećina","Samarčice pećina","Hadžička pećina","Ravanicka pećina","Cerjanska pećina","Đavolja varoš"]},
+{cat:"Geo 3. razred", q:"U kojemu reljefnom dijelu Srbije se nalazi Negotinska pješćara?", a:["Pontijskoj niziji","Srpsko-makedonskoj masi","Timočkoj krajini","Karpato-balkanskim planinama","Podunavskoj ravnici","Mačvanskoj ravnici","Sremskoj ravnici","Posavini","Šumadiji","Podrinju","Braničevu","Leskovačkim poljem"]},
+{cat:"Geo 3. razred", q:"Koji grad u Srbiji je najosunčaniji?", a:["Kikinda","Niš","Vranje","Negotin","Zrenjanin","Kruševac","Valjevo","Šabac","Leskovac","Pirot","Zaječar","Sombor"]},
+{cat:"Geo 3. razred", q:"Koliko snijega prosječno padne na Kopaoniku tokom godine?", a:["oko 400 cm","oko 200 cm","oko 300 cm","oko 500 cm","oko 150 cm","oko 600 cm","oko 100 cm","oko 700 cm","oko 250 cm","oko 350 cm","oko 450 cm","oko 50 cm"]},
+{cat:"Geo 3. razred", q:"Koje vrelo u Karpatsko-balkanskim planinama ima najjaču izdašnost?", a:["vrelo Mlave","vrelo Timoka","vrelo Nišave","vrelo Peka","vrelo Resave","vrelo Morave","vrelo Crnice","vrelo Drine","vrelo Ibra","vrelo Save","vrelo Uvca","vrelo Rzava"]},
+{cat:"Geo 3. razred", q:"Kako nazivamo termomineralne izvore koji imaju temperaturu vode 34-38°C?", a:["homeotherme","hipertermale","hipotermale","mezoterme","aterme","kriptotermalne","izotermale","normotermalne","euterme","radiotermale","kvazitermale","peritermale"]},
+{cat:"Geo 3. razred", q:"Kako nazivamo mineralne vode koje u sebi sadrže 10-50 g/l rastvorenih mineralnih materija?", a:["slane","slabo mineralisane","jačo mineralisane","jako mineralisane","sulfatne","bikarbonantne","sulfidne","željezovite","radioaktivne","jodne","bromne","fluorne"]},
+{cat:"Geo 3. razred", q:"Koje vode (po temperaturnim svojstvima) se koriste u Jošaničkoj banji?", a:["hipertermalne vode","homeotermalne vode","mezotermalne vode","hipotermalne vode","atermalne vode","izotermalne vode","kriotermalne vode","normotermalne vode","eutermalne vode","kvazitermalne vode","peritermalne vode","oligominerlane vode"]},
+{cat:"Geo 3. razred", q:"Koja banja, nedaeko od Čačka, je poznata po korišćenju radioaktivne vode?", a:["Gornja Trep ća","Ovčar banja","Vrnjačka banja","Bogutovac","Vitanovac banja","Gaovice banja","Mataruška banja","Rajacka banja","Ribnica banja","Safarica banja","Kragujevac banje","Donja Trep ća"]},
+{cat:"Geo 3. razred", q:"Kojemu slivu pripada rijeka Pčinja?", a:["Egejskom slivu","Crno morskom slivu","Jadranskom slivu","Panonskom slivu","Dunav skom slivu","Mediteranskom slivu","Jonskom slivu","Marmornom slivu","Morskom slivu","Atlantskom slivu","Tihookeanskom slivu","Severnom slivu"]},
+{cat:"Geo 3. razred", q:"Koja rijeka na Kosovu i Metohiji predstavlja primjer vještačke bifurkacije?", a:["Nerodimka","Sitnica","Bijeli Drim","Ibar","Lepenac","Prizrenska Bistrica","Klina","Erenička rijeka","Beli Drim","Tren","Lim","Uvac"]},
+{cat:"Geo 3. razred", q:"Koja rijeka nastaje spajanjem Golijske Moravice i Đetinje?", a:["Zapadna Morava","Južna Morava","Velika Morava","Ibar","Rzav","Uvac","Studenica","Raška","Lopatnica","Gruža","Đetinja","Kamešnica"]},
+{cat:"Geo 3. razred", q:"Za koji tip jezera je tipičan primjer Zavoj sko jezero na rijeci Višnuci?", a:["urnisca jezera","tektonska jezera","ledniška jezera","kraška jezera","vulkanska jezera","morenska jezera","veštačka jezera","lagunarena jezera","deltna jezera","oksbajna jezera","akumulativna jezera","riječna jezera"]},
+{cat:"Geo 3. razred", q:"Kako se naziva najviše vještačko jezero u Srbiji?", a:["Vlasinsko jezero","Šarsko jezero","Gazivode","Perućac","Đerdap","Gruža","Grošnica","Bovansko","Bresta vačko","Ćelije","Palilebanac","Borsko jezero"]},
+{cat:"Geo 3. razred", q:"Koji tip plodnog zemljišta je zastupljene u Mačvi, Stigu i Braničevu?", a:["črnozem","smeđe šumsko tlo","kiselo smeđe tlo","rankeri","slatine","rigosol","aluvijalno tlo","diluvijalno tlo","pseudogleji","glejevi","koluvijumi","rendzine"]},
+{cat:"Geo 3. razred", q:"U kom dijelu Srbije se nalazi najveći broj Ramsarskih područja (vlažna staništa ptica mocarica)?", a:["Vojvodini — Panonskoj oblasti","Šumadiji","Zapanodnoij Srbiji","Jugoistočnoj Srbiji","Centralnoj Srbiji","Morasvkoij oblasti","Posavini","Podrenju","Timočkoj krajini","Braničevu","Kopaoniku","Podrinju"]},
+{cat:"Geo 3. razred", q:"Koja životinjska vrsta je 2004. godine ponovo vraćena (reintrodukovana) na područje Zasavice i Obedske bare?", a:["evropski dabar","vidra","ris","vuk","medvjed","orao","suri orao","jesetra","morski orao","čaplja","čigra","krdlija"]},
+{cat:"Geo 3. razred", q:"Koje godine je izvršen prvi popis stanovništva u Kneževini Srbiji?", a:["1834. godine","1840. godine","1850. godine","1865. godine","1820. godine","1880. godine","1810. godine","1890. godine","1800. godine","1900. godine","1870. godine","1815. godine"]},
+{cat:"Geo 3. razred", q:"Koja beogradska opština ima najveću gustinu naseljenosti?", a:["Vračar","Zemun","Stari grad","Savski venac","Palilula","Čukarica","Voždovac","Novi Beograd","Rakovica","Sopot","Grocka","Lazarevac"]},
+{cat:"Geo 3. razred", q:"Koje sremsko naselje većinski nastanjuju Slovaci?", a:["Staru Pazovu","Šid","Sremska Mitrovica","Rumu","Inđiju","Sremsku Kamenicu","Kupinovo","Hrtkovce","Vojku","Martince","Deč","Klenku"]},
+{cat:"Geo 3. razred", q:"Koji narod je većinski u opštini Bosilegrad?", a:["Bugari","Srbi","Vlasi","Romi","Mađari","Rumuni","Slovaci","Česi","Hrvati","Nijemci","Grci","Jevreji"]},
+{cat:"Geo 3. razred", q:"Od ukupno 6.158 naselja u Srbiji, koliko naselja ima status gradskih?", a:["193 naselja","150 naselja","250 naselja","200 naselja","175 naselja","125 naselja","100 naselja","300 naselja","225 naselja","275 naselja","50 naselja","400 naselja"]},
+{cat:"Geo 3. razred", q:"Kakva naselja (po genezi) su karakteristična za Vojvodinu?", a:["planska","organska","spontana","linearana","okrugla","rasuta","mješovita","radijalna","polutalna","mrežasta","klasterska","ulična"]},
+{cat:"Geo 3. razred", q:"Kako nazivamo proces starenja seoskog stanovništva?", a:["senilizacija","urbanizacija","deuropulacija","ruralizacija","depopulacija","rejuvenacija","demografski pad","starnivanje","gerontizacija","seninancija","silvizacija","agrizacija"]},
+{cat:"Geo 3. razred", q:"Čime su se u Srbiji bavili Sasi?", a:["rudarstvom","stočarstvom","ribarstvenom","zanantstvenim","trgovinom","vojnom","pravom","diplomatijom","obrazovanjem","sveštenstvomn","naukom","medicinom"]},
+{cat:"Geo 3. razred", q:"Kako se zove proces vraćanja imovine starim vlasnicima?", a:["restitucija","nationalizacija","privatizacija","kolektivisanje","konfiskacija","eksproprjacija","liberalizacija","demokratizacija","deregulacija","fiscalizacija","deprivatizacija","reurbanizacija"]},
+{cat:"Geo 3. razred", q:"Kako se nazivaju mjere koje se sprovode radi poboljšanja zemljišnih osobina?", a:["melioracija","agrikultura","iriegacija","desalinizacija","kompostiranje","gnojidba","deforestacija","kultivacija","aralizacija","fertilizacija","skarifikacija","mulčovanje"]},
+{cat:"Geo 3. razred", q:"Koje kulture procentualno (88%) dominiraju u Srbiji među zasijanim površinama pod žitaricama?", a:["kukuruz i pšenica","ječam i raž","ovas i proso","pirinaač i sorgo","triticale i spelta","pir i kinoa","durum i emmer","kamut i farro","tef i amarant","sveže žitarice","ječam i proso","šećerna trska"]},
+{cat:"Geo 3. razred", q:"Poznata banatska fabrika začinske paprike 'Aleva' je iz:", a:["Novog Knežvca","Kikinde","Zrenjanina","Pančeva","Vršca","Sombora","Subotice","Sremske Mitrovice","Novog Sada","Beograda","Valeva","Požarevca"]},
+{cat:"Geo 3. razred", q:"Koje voće ima najveći značaj u izvozu Republike Srbije?", a:["malina","šljiva","jabuka","grožđe","trešnja","jagoda","kupina","ribizle","kruška","breskva","kajsija","borovnica"]},
+{cat:"Geo 3. razred", q:"Po kojemu regionu Istočne Srbije je nazvana zaštićena vrsta meda po svom geografskom porijeklu?", a:["Homolju","Zaječarskom okrugu","Krajini","Timoku","Đerdapu","Ponišavlju","Zaplanju","Pčinskom okrugu","Jablanicom","Leskovačkim okrugom","Nišavskim okrugom","Pirotskim okrugom"]},
+{cat:"Geo 3. razred", q:"U kom basenu se nalaze najveće rezerve lignita u Srbiji?", a:["Kosovsko-metohijskom basenu","Kolubarskom basenu","Kostolačkom basenu","Krivovirskom basenu","Štavaljanskom basenu","Sočaničkom basenu","Aleks inačkom basenu","Šitiboračkom basenu","Senjskovom basenu","Vlasinski basenu","Toplićkom basenu","Jablaničkom basenu"]},
+{cat:"Geo 3. razred", q:"U Srbiji najveći procenat električne energije proizvode:", a:["termoelektrane","hidroelektrane","nuklearne elektrane","solarne elektrane","vjetroelektrane","geotermalne elektrane","elektrane na biogas","elektrane na biomasu","elektrane na plvu i oseku","geotermalne elektrane","plutajuće elektrane","elektrane na valove"]},
+{cat:"Geo 3. razred", q:"Gdje se u Srbiji nalaze najveća nalazišta olovo-cinčane rude?", a:["na Kosovu","u Boru","u Zaječaru","u Majdanpeku","u Novom Sad u","na Kopaoniku","na Zlatiboru","na Staroj Planini","u Vranju","u Nišu","u Kragujevcu","u Šapcu"]},
+{cat:"Geo 3. razred", q:"U kom gradu se nalazi fabrika 'Metalac', vodeći proizvođač metalnog posuđa u Srbiji?", a:["u Gornjem Milanovcu","u Kragujevcu","u Šapcu","u Valjevu","u Čačku","u Užicu","u Kruševcu","u Nišu","u Aleksandrovcu","u Vrnjačkoj Banji","u Aranđelovcu","u Čičevcu"]},
+{cat:"Geo 3. razred", q:"Gdje se nalazi fabrika ulja 'Vital', jedna od najvećih i najstarijih fabrika ulja i biljnih masti na Balkanskom poluostrvu?", a:["u Vrbasu","u Novom Sadu","u Somboru","u Kikindi","u Zrenjaninu","u Pančevu","u Subotici","u Sremskoj Mitrovici","u Šapcu","u Valjevu","u Beogradu","u Barajevcu"]},
+{cat:"Geo 3. razred", q:"Koje godine je puštena u rad željeznicka pruga Beograd — Bar?", a:["1976. godine","1969. godine","1982. godine","1955. godine","1985. godine","1990. godine","1948. godine","1965. godine","1995. godine","2000. godine","1940. godine","1930. godine"]},
+{cat:"Geo 3. razred", q:"Kojoj banjskoj zoni Srbije pripadaju Lukovska i Prolom banja?", a:["Kopaoničko-jastrebačkoij","Podrinjsko-valjevjskoij","Šumadijskoij","Zapandnoj Srbiji","Timoćkoij","Sremski-Fruškogorsko","Jugoistočnoj Srbiji","Goliji","Zlatiborsko-uvačkoij","Ibarskoij","Šarsko-kosmetskoij","Moravskoij"]},
+{cat:"Geo 3. razred", q:"Koja biblioteka je najstarija srpska nacionalna biblioteka?", a:["biblioteka Matice srpske","Narodna biblioteka Srbije","Biblioteka SANU","Biblioteka Patrijarš ije","Biblioteka PMF-a","Biblioteka Pravnog fakult.","Centralna vojska biblioteka","Gradska biblioteka Beograd","Biblioteka Kolarčevog narodnog universiteta","Biblioteka Zadušbina Jovana Skerlića","Biblioteka Mala akademija nauka","Gradska bibl. Novi Sad"]},
+{cat:"Geo 3. razred", q:"Gdje se u Beogradu nalaze spopinici Jovanu Cvijiću, Josifu Pančiću i Dositej Obradoviću?", a:["u Univerzitetskom ili Akademskom parku","ispred Srpske akademije nauka","u Kalemegdanskom parku","u Topčideru","na Terazijama","u Tasmajdanu","na Zmajevom trgu","u Pionirskom parku","na Slaviji","u Studentskom parku","na Starom sajmištu","kod Saborrne crkve"]},
+{cat:"Geo 3. razred", q:"Koja subregionalna cjelina Vojvodine, sa veličinom od 9.296 km2, je najveća po svojoj površini?", a:["Banat","Bačka","Srem","Baranja","Mačva","Posavina","Slavonija","Podunav je","Tamnava","Palanka","Šabac","Ušće"]},
+{cat:"Geo 3. razred", q:"Najpoznatija lesna zaravan u Vojvodini se nalazi na jugoistoku Bačke i nosi naziv:", a:["Titelski breg","Subotička pješćara","Deliblatska pješćara","Fruškogorski breg","Vršačke planine","Bačka greda","Teleska zaravan","Dunajska zaravan","Banatska zaravan","Titelski breg","Potiski breg","Sremski breg"]},
+{cat:"Geo 3. razred", q:"Kakva su, po svom postanku, Belocrkvanska jezera?", a:["vještačka","tektonska","kraška","ledničaka","vulkanska","morenska","fluvijalna","lagunarena","deltna jezera","oksbajna","jezerska","poludepresivna"]},
+{cat:"Geo 3. razred", q:"Koje godine je osnovan nacionalni park Fruška gora, najstariji u Srbiji?", a:["1960. godine","1970. godine","1980. godine","1950. godine","1965. godine","1975. godine","1985. godine","1955. godine","1990. godine","1945. godine","1995. godine","2000. godine"]},
+{cat:"Geo 3. razred", q:"Koji grad u Vojvodini, zbog bogate istorije i kulturno-umjntničkog nasljeđa, nazivaju 'grad-muzej'?", a:["Sremske Karlovce","Novi Sad","Subot icu","Zrenjanin","Vrbas","Inđiju","Šid","Sremsku Mitrovicu","Kikiendu","Pančevo","Bečej","Senta"]},
+{cat:"Geo 3. razred", q:"Kako se naziva najveća kotlina u Srbiji?", a:["Metohijska kotlina","Moravska kotlina","Šumadijska kotlina","Mačvanska kotlina","Leskovačka kotlina","Vranjska kotlina","Kosovska kotlina","Raška kotlina","Potka kotlina","Sjenicka kotlina","Kolubarška kotlina","Timočka kotlina"]},
+{cat:"Geo 3. razred", q:"Na kojoj rijeci su nastale 'Metohijske Plitvice'?", a:["Miruši","Drinu","Bistu u","Lepencu","Prizrenjskoij Bistrici","Kl ini","Ereni ku","Belo m Drimu","Sitnici","Ib ru","Lepljancu","Ereničkoj rijeci"]},
+{cat:"Geo 3. razred", q:"Koja banja se nalazi u slivu Binacke Morave?", a:["Klokot banja","Bujanovac banja","Lukovska banja","Niška banja","Prolom banja","Vlasinska banja","Brestovacka banja","Sokobanja","Gamzigradska banja","Zvonačka banja","Kumanicka banja","Sijarinska banja"]},
+{cat:"Geo 3. razred", q:"Iz kojeg jezera se stanovništvo Prištine snabdjeva vodom za piće?", a:["Gazivode","Batlava","Radonica","Grošnica","Gruža","Ćelije","Bovan","Vlasina","Prvonek","Zlatarsko","Uvac","Kokin Brod"]},
+{cat:"Geo 3. razred", q:"Koji nacionalni park u Srbiji je poznat po ledničkim oblicima reljefa?", a:["NP 'Šar planina'","NP 'Đerdap'","NP 'Fruška gora'","NP 'Tara'","NP 'Kopaonik'","NP 'Zlatibor'","NP 'Uvac'","NP 'Zasavica'","NP 'Obedska bara'","NP 'Stara Planina'","NP 'Suva planina'","NP 'Rtanj'"]},
+{cat:"Geo 3. razred", q:"Koji srpski vladar je podigao manstir Gračanicu u duhu vizantijske tradicije?", a:["kralj Milutin","Stefan Nemanja","Sveti Sava","Lazar Hrebeljanović","Stefan Dušan","Stefan Prvovenčan i","Vladislav","Uroš I","Dragutin","Stefan Lazarević","Vuk Branković","Đurađ Branković"]},
+{cat:"Geo 3. razred", q:"Koji grad u Metohiji su nekada zvali 'Srpskim Carigradom'?", a:["Prizren","Peć","Đakovica","Orahovac","Gnjilane","Uroševac","Mitrovica","Klina","Suva Reka","Podujevo","Vučitrn","Štimlje"]},
+{cat:"Geo 3. razred", q:"Koja planina je najviša i najprostranija u Šumadiji?", a:["Rudnik","Juhur","Ždrelo","Bukulja","Venčac","Kosmaj","Avala","Crni Vrh","Kabljar","Stragari","Gledić","Trstenica"]},
+{cat:"Geo 3. razred", q:"Koji srpski vladar je doprinio uređenju i afirmaciji Bukovičke banje?", a:["knez Miloš Obrenović","kralj Milan","kralj Petar","knez Aleksandar","knez Mihajlo","Karadjordje","Miloš Veliki","knez Uroš","Stefan Nemanja","Stefan Dušan","Lazar Hrebeljanović","Vuk Branković"]},
+{cat:"Geo 3. razred", q:"Za koju namjenu se koriste vode Gružanskog i Grošničkog jezera?", a:["za vodosnabdijevanje","za navodnjavanje","za rekreaciju","za proizvodnju električne energije","za ribarstvo","za plovidbu","za industrijske svrhe","za zaštitu od poplava","za irigaciju","za turizam","za hladnjenje industrijskih postrojenja","za sportske aktivnosti"]},
+{cat:"Geo 3. razred", q:"Koji grad je do 1841. godine bio prestonica Kneževine Srbije?", a:["Kragujevac","Beograd","Niš","Šabac","Smederevo","Užice","Valjevo","Čačak","Požarevac","Jagodina","Zaječar","Leskovac"]},
+{cat:"Geo 3. razred", q:"Gdje se nalazi mauzolej dinastije Karađorđevića?", a:["na Oplencu kod Topole","u Beogradu","u Nišu","u Kragujevcu","na Fruškoij gori","u Gokčanici","u Manasiji","u Ravanici","u Sopoćanima","u Studenici","na Ovčar-Kablaru","u Hilandaru"]},
+{cat:"Geo 3. razred", q:"Koja mikroregija se proteže u slivu rijeke Đetinje?", a:["Užički kraj","Rađevina","Jadar","Podgora","Azbukovica","Gučevo","Zlatibor","Jelen-Do","Čemerno","Uvačka dolina","Koseničke šume","Radimlje"]},
+{cat:"Geo 3. razred", q:"Koja klisura razdvaja Gornju od Donje velikomoravske kotline?", a:["Bagrdanska klisura","Stalacka klisura","Đerdapska klisura","Grdeličkana klisura","Sicevacna klisura","Ovčarsko-kab larska klisura","Tesnacina klisura","Resavska klisura","Mokranjska klisura","Temska klisura","Krupajska klisura","Boljetinska klisura"]},
+{cat:"Geo 3. razred", q:"Tipičan primjer ukliještenih meandara na toku Zapadne Morave se nalazi u klisuri:", a:["Ovčarsko-kablartskoij","Bagrdantskoij","Đerdaptskoij","Grdeličktskoij","Sičevačtskoij","Resavskoij","Tesnacrtskoij","Mokranjskoij","Temsktskoij","Krupajskoij","Boljetinskoij","Stalačktskoij"]},
+{cat:"Geo 3. razred", q:"Između kojih slivova se pruža široko i nisko razvođe Prešvske povije?", a:["Crnog i Egejskog mora","Crnog i Jadranskog mora","Jadranskog i Egejskog mora","Jadranskog i Jonskoga mora","Sjevernog i Baltičkog mora","Egejskog i Jonskog mora","Crnog i Kaspijskog mora","Mediteranskog i Egejskog mora","Tirenhkog i Ligurskog mora","Crnog i Azovskog mora","Egejskog i Mramornog mora","Jadranskog i Albanskog mora"]},
+{cat:"Geo 3. razred", q:"Koje kotline razdvaja Grdelička klisura?", a:["Vranjsku i Leskovačku","Vranjsku i Nišku","Leskovačku i Nišku","Leskovačku i Surdulicku","Vranjsku i Bujanovačku","Bujanovačku i Prešvsku","Nišku i Aleksinačku","Aleksinačku i Leskovačku","Bosilegrad sku i Vranjsku","Vlasotinačku i Leskovačku","Vranjsku i Vlasotinačku","Skopljanski i Prešvsku"]},
+{cat:"Geo 3. razred", q:"Dolina koje rijeke spada u najsuše dijelove Srbije?", a:["Južne Morave","Nišave","Pčinje","Vlasine","Tople","Jablanice","Veternice","Breznice","Lužnice","Resave","Crnice","Crnok"]},
+{cat:"Geo 3. razred", q:"U okviru kog rudnika se nalazila najdublja ugljena jama 'Morava'?", a:["Aleksinačkog rudnika","Kolubarskog rudnika","Kostolačkog rudnika","Senjskog rudnika","Šitiboračk og rudnika","Vlasinjskog rudnika","Krivovirskog rudnika","Sočaničkog rudnika","Zlotskog rudnika","Rbnički rudnik","Trbovlje rudnik","Mramorskog rudnika"]},
+{cat:"Geo 3. razred", q:"Koji rimski imperator je rođen u Naissu, današnjem Nišu?", a:["Konstantin Veliki","Dioklecijan","Justinijan","Marko Aurelije","Trajan","Hadrijan","Teodosije","Valens","Grat ijan","Julijan","Arkadilje","Honorije"]},
+{cat:"Geo 3. razred", q:"Kom luku planina pripadaju Miroč, Deli Jovan, Beljanca i Rtanj?", a:["Karpatskom","Balkanskom","Rodopskom","Dinarskom","Šarskom","Pindskom","Trakijskom","Myzijskom","Trakijsko-pontinskom","Rodopsko-makedonskom","Makedonsko-trakijskom","Egejsko-pontskom"]},
+{cat:"Geo 3. razred", q:"Koliko klisura postoji u kompozitnoj dolini Đerdapa?", a:["četiri","tri","pet","dvije","šest","sedam","osam","devet","deset","jedanaest","dvanaest","jedna"]},
+{cat:"Geo 3. razred", q:"Koje polje u karstu Istočne Srbije je najveće?", a:["Odorovsko polje","Zabela","Mokranjsko polje","Štrbačko polje","Lenovačko polje","Lenovaraansko polje","Zvezdansko polje","Manasijsko polje","Bojničko polje","Lazarevačko polje","Žagubičko polje","Zlotsko polje"]},
+{cat:"Geo 3. razred", q:"Koja pećina je turistički najposjećenija u Srbiji?", a:["Stopića pećina","Lazareva pećina","Resavska pećina","Potpećka pećina","Cerjanska pećina","Rajkova pećina","Hadžička pećina","Ravanicka pećina","Samarčice pećina","Vlasinska pećina","Đavolja varoš","Zlotska pećina"]},
+{cat:"Geo 3. razred", q:"Koje jezero je nastalo pregradinvanjem Brestovačke rijeke?", a:["Borsko jezero","Vlasinsko jezero","Sićevačko jezero","Gazivode","Batlava jezero","Grošnica jezero","Gružansko jezero","Ćelije jezero","Bovan jezero","Zlatarsko jezero","Uvac jezero","Kokin Brod"]},
+{cat:"Geo 3. razred", q:"Prvi geopark u Srbiji, proglašen 2020. godine, je:", a:["Đerdap","Rtanj","Stara Planina","Kopaonik","Fruška gora","Uvac","Tara","Zlatibor","Šar planina","Vlasina","Vlasinska kotlina","Zasavica"]},
+{cat:"Geo 3. razred", q:"Koja manifestacija se tradicionalno održava u Kučevu, a afirmiše vrijednosti vlaške nacionalne manjine u Srbiji?", a:["Homoljski motivi","Dragačevski sabor","Vukovi sabor","Fruškogorski sabor","Vukov sabor","Sabor u Trstiću","Sabor u Gudovcu","Sabor u Knezini","Sabor u Majdanpeku","Sabor u Topoli","Sabor u Zaječaru","Sabor u Zaječarsk oj kotlini"]},
+{cat:"Geo 3. razred", q:"Koji grad Istočne Srbije je poznat po ćilimaarstu?", a:["Pirot","Zaječar","Bor","Negotin","Knjaževac","Majdanpek","Kladovo","Boljevac","Aleksinac","Svrljig","Niš","Leskovac"]},
+{cat:"Geo 3. razred", q:"Koja mikroregija Zapdne Srbije se proteže u slivu rijeke Likodre?", a:["Rađevina","Jadar","Azbukovica","Podgora","Gučevo","Krnji Bregovi","Mačva","Podgorje","Kolubarinski kraj","Jelovik","Šarenske livade","Orovaca"]},
+{cat:"Geo 3. razred", q:"Na kojoj planini se nalazi visogaran Divčibare?", a:["Maljen","Zlatibor","Tara","Rudnik","Suvobor","Jablanik","Bukulja","Venčac","Kosmaj","Avala","Juhur","Kabljar"]},
+{cat:"Geo 3. razred", q:"U dolini koje rijeke u Zapanodoj Srbiji je predviđena eksploatacija litijuma?", a:["Jadra","Drine","Ibra","Uvca","Đetinje","Rzava","Save","Morave","Kolubare","Gradca","Ljiga","Toplice"]},
+{cat:"Geo 3. razred", q:"Na kojoj planini, u blizini Šapca, se odigrala čuvena bitka i prva saveznicka pobjeda u Prvom svjehtskom ratu?", a:["Ceru","Rudniku","Kosmaju","Avali","Venšcu","Bukulji","Maivnom Vru","Oblom brijegu","Cer planini","Mačkov kamen","Šabacu","Teklici"]},
+{cat:"Geo 3. razred", q:"Koja kulturna manefestacija se tradicionalno održava u Tršiću?", a:["'Vukov sabor'","'Dragačevski sabor'","'Sajam vina'","'Trešnjevica'","'Pesnici Srbije'","'Sabor pevača'","'Festival knjiga'","'Danilovi dani'","'Pesma ljetnjeg solsticija'","'Vukovi dani'","'Vukova škola'","'Pesnici Šumadije'"]},
+{cat:"Geo 3. razred", q:"Koja mikroregija se proteže duž rijeke Bjelice i na planini Jelici?", a:["Dragačevo","Rađevina","Jadar","Azbukovica","Podgora","Gučevo","Takovo","Gruža","Lepenica","Morava","Ibar","Ovcar"]},
+{cat:"Geo 3. razred", q:"U kom manastiru se nalazi freska 'Bijeli anđeo'?", a:["Mileševa","Sopoćani","Studenica","Manasija","Ravanica","Žiča","Peć","Dečani","Gračanica","Hilandar","Kalenić","Resava"]},
+{cat:"Geo 3. razred", q:"U kom američkom gradu je najbrojnija srpska zajednica?", a:["Čikagu","Njujorku","Pitsburgu","Klivlendu","Detroitu","San Francisku","Los Anđelesu","Sijetlu","Hjustonu","Denveru","Feniksu","Atlanti"]},
+];
+
+// ═══════════════════════════════════════════════════════
+//  STANJE
+// ═══════════════════════════════════════════════════════
+let mode = 'mc';
+let feedbackMode = 'immediate';
+let questions = [];
+let currentIdx = 0;
+let score = 0;
+let answered = false;
+let mistakes = [];
+let userAnswers = []; // for 'end' mode
+
+// ═══════════════════════════════════════════════════════
+//  SETUP
+// ═══════════════════════════════════════════════════════
+document.querySelectorAll('.radio-opt').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const inp = this.querySelector('input');
+    const group = inp.name;
+    document.querySelectorAll(`input[name="${group}"]`).forEach(i => {
+      i.closest('.radio-opt').classList.remove('selected');
+    });
+    inp.checked = true;
+    this.classList.add('selected');
+  });
+});
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  mode = document.querySelector('input[name="mode"]:checked').value;
+  feedbackMode = document.querySelector('input[name="feedback"]:checked').value;
+  const n = Math.min(Math.max(parseInt(document.getElementById('numQ').value) || 10, 1), QDB.length);
+
+  // pick n random questions
+  questions = shuffle(QDB).slice(0, n);
+  currentIdx = 0;
+  score = 0;
+  mistakes = [];
+  userAnswers = [];
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════════════════════
+//  QUIZ RENDERING
+// ═══════════════════════════════════════════════════════
+function renderQuestion() {
+  answered = false;
+  const q = questions[currentIdx];
+  const total = questions.length;
+
+  // progress
+  document.getElementById('progressText').textContent = `Pitanje ${currentIdx + 1} od ${total}`;
+  document.getElementById('scoreText').textContent = `${score} tačno`;
+  document.getElementById('progressBar').style.width = `${(currentIdx / total) * 100}%`;
+
+  document.getElementById('qCategory').textContent = q.cat;
+  document.getElementById('qText').textContent = q.q;
+
+  // hide feedback
+  const fb = document.getElementById('feedbackBox');
+  fb.style.display = 'none';
+  fb.className = 'feedback-box';
+
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('skipBtn').style.display = mode === 'text' ? 'inline-block' : 'none';
+
+  if (mode === 'mc') {
+    document.getElementById('mcOptions').style.display = 'flex';
+    document.getElementById('textInputArea').style.display = 'none';
+    renderMC(q);
+  } else {
+    document.getElementById('mcOptions').style.display = 'none';
+    document.getElementById('textInputArea').style.display = 'block';
+    renderText(q);
+  }
+}
+
+function renderMC(q) {
+  // pick 3 random wrong + 1 correct, shuffle
+  const wrongs = shuffle(q.a.slice(1)).slice(0, 3);
+  const opts = shuffle([q.a[0], ...wrongs]);
+  const container = document.getElementById('mcOptions');
+  container.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-btn';
+    btn.textContent = opt;
+    btn.onclick = () => selectMC(btn, opt, q.a[0]);
+    container.appendChild(btn);
+  });
+}
+
+function selectMC(btn, chosen, correct) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.mc-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = chosen === correct;
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    score++;
+    document.getElementById('scoreText').textContent = `${score} tačno`;
+    if (feedbackMode === 'immediate') showFeedback(true, correct);
+  } else {
+    btn.classList.add('wrong');
+    allBtns.forEach(b => { if (b.textContent === correct) b.classList.add('reveal-correct'); });
+    mistakes.push({ q: questions[currentIdx].q, yours: chosen, correct });
+    if (feedbackMode === 'immediate') showFeedback(false, correct);
+  }
+
+  userAnswers.push({ q: questions[currentIdx], chosen, correct, isCorrect });
+
+  if (feedbackMode === 'end') {
+    showNextBtn();
+  }
+}
+
+function renderText(q) {
+  const inp = document.getElementById('textAnswer');
+  inp.value = '';
+  inp.className = 'text-answer-input';
+  inp.disabled = false;
+  document.getElementById('submitTextBtn').disabled = false;
+  inp.focus();
+  inp.onkeydown = e => { if (e.key === 'Enter') submitText(); };
+}
+
+function submitText() {
+  if (answered) return;
+  const q = questions[currentIdx];
+  const inp = document.getElementById('textAnswer');
+  const raw = inp.value.trim();
+  if (!raw) return;
+
+  answered = true;
+  inp.disabled = true;
+  document.getElementById('submitTextBtn').disabled = true;
+  document.getElementById('skipBtn').style.display = 'none';
+
+  const isCorrect = checkTextAnswer(raw, q.a[0]);
+
+  if (isCorrect) {
+    inp.classList.add('correct');
+    score++;
+    document.getElementById('scoreText').textContent = `${score} tačno`;
+    if (feedbackMode === 'immediate') showFeedback(true, q.a[0]);
+  } else {
+    inp.classList.add('wrong');
+    mistakes.push({ q: q.q, yours: raw, correct: q.a[0] });
+    if (feedbackMode === 'immediate') showFeedback(false, q.a[0]);
+  }
+
+  userAnswers.push({ q, chosen: raw, correct: q.a[0], isCorrect });
+
+  if (feedbackMode === 'end') {
+    showNextBtn();
+  }
+}
+
+function checkTextAnswer(given, correct) {
+  const norm = s => s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[čć]/g,'c').replace(/š/g,'s').replace(/ž/g,'z').replace(/đ/g,'d')
+    .trim();
+
+  const g = norm(given);
+  const c = norm(correct);
+
+  if (g === c) return true;
+  if (c.includes(g) && g.length >= 3) return true;
+
+  // check if any token in the answer matches a token in correct
+  const parts = c.split(/[\s,\/]+/).filter(p => p.length >= 3);
+  for (const p of parts) {
+    if (g === p || g.includes(p) || p.includes(g)) return true;
+  }
+  return false;
+}
+
+function skipQuestion() {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentIdx];
+  mistakes.push({ q: q.q, yours: '(preskočeno)', correct: q.a[0] });
+  userAnswers.push({ q, chosen: '(preskočeno)', correct: q.a[0], isCorrect: false });
+  if (feedbackMode === 'immediate') {
+    showFeedback(false, q.a[0], true);
+  } else {
+    showNextBtn();
+  }
+}
+
+function showFeedback(correct, answer, skipped) {
+  const fb = document.getElementById('feedbackBox');
+  fb.style.display = 'block';
+  if (correct) {
+    fb.className = 'feedback-box correct';
+    fb.textContent = '✓ Tačno!';
+  } else if (skipped) {
+    fb.className = 'feedback-box wrong';
+    fb.textContent = `Preskočeno. Tačan odgovor: ${answer}`;
+  } else {
+    fb.className = 'feedback-box wrong';
+    fb.textContent = `✗ Netačno. Tačan odgovor: ${answer}`;
+  }
+  showNextBtn();
+}
+
+function showNextBtn() {
+  const nextBtn = document.getElementById('nextBtn');
+  const isLast = currentIdx === questions.length - 1;
+  nextBtn.style.display = 'inline-block';
+  nextBtn.textContent = isLast ? 'Završi →' : 'Sljedeće pitanje →';
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= questions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESULTS
+// ═══════════════════════════════════════════════════════
+function showResults() {
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('resultsScreen').style.display = 'block';
+
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('scoreOf').textContent = `od ${total} pitanja`;
+
+  const pctEl = document.getElementById('scorePct');
+  pctEl.textContent = `${pct}% tačno`;
+  pctEl.className = 'score-pct ' + (pct >= 75 ? 'great' : pct >= 50 ? 'ok' : 'bad');
+
+  // if 'end' mode, collect mistakes from userAnswers
+  const allMistakes = userAnswers.filter(a => !a.isCorrect).map(a => ({
+    q: a.q.q,
+    yours: a.chosen,
+    correct: a.correct
+  }));
+
+  const listEl = document.getElementById('mistakesList');
+  const ms = feedbackMode === 'end' ? allMistakes : mistakes;
+
+  if (ms.length === 0) {
+    listEl.innerHTML = '<div class="all-correct-msg">🎉 Sve tačno! Odlično!</div>';
+    document.querySelector('.mistakes-section h3').style.display = 'none';
+  } else {
+    document.querySelector('.mistakes-section h3').style.display = 'block';
+    listEl.innerHTML = ms.map(m => `
+      <div class="mistake-item">
+        <div class="mistake-q">${m.q}</div>
+        <div class="mistake-your">Tvoj odgovor: ${m.yours}</div>
+        <div class="mistake-correct">Tačan odgovor: ${m.correct}</div>
+      </div>
+    `).join('');
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goSetup() {
+  document.getElementById('resultsScreen').style.display = 'none';
+  document.getElementById('setupScreen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
