@@ -3,7 +3,7 @@ name: Update rank data
 on:
   schedule:
     # Svakih 15 minuta
-    - cron: "*/15 * * * *"
+    - cron: "*/19 * * * *"
   workflow_dispatch: {}
   push:
     branches: [main]
